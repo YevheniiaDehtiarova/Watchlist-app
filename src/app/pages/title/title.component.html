@@ -1,0 +1,57 @@
+<div class="title-container">
+<div class="title-container__header">
+    <h4>Movie Detail</h4>
+    <a [routerLink]="['/search']">Back Search Page</a>
+</div>
+
+<div *ngIf="loading" class="load-state">
+    <app-loader></app-loader>
+    Loading
+ </div>
+
+<div *ngIf="title" class="title-container__block">
+
+<div class="title-container__poster">
+    <img src="{{title?.Poster}}" alt="">
+</div>
+<div class="title-container__content">
+<p>{{title?.Title}}</p>
+<div>
+    <span class="title-container__subtitle">Writer:</span>
+    <span class="title-container__name"> {{title?.Writer}}</span>  
+</div>
+<div>
+    <span class="title-container__subtitle">Country:</span>
+    <span class="title-container__name">{{title?.Country}}</span>   
+</div>
+
+<div>
+    <span class="title-container__subtitle">Year:</span>
+    <span class="title-container__name">{{title?.Year}}</span>  
+</div>
+
+<ul *ngIf="title?.Ratings">
+    <li *ngFor="let rate of title.Ratings">
+        <span class="title-container__subtitle">{{ rate.Source }}</span>
+        <span class="title-container__name">{{ rate.Value }}</span>
+        <div class="star-rating">
+            <div class="star" [ngClass]="{'filled': isStarFilled(rate.Value,i)}" *ngFor="let star of stars; let i = index"></div>
+        </div>
+      </li>
+</ul>
+
+<div class="title-container__buttons">
+    <button *ngIf="!title?.isAdded && !isExistMovieWatchList" (click)="addMovieToWatchList(title)">Add to watch movie list</button>
+    <div *ngIf="title?.isAdded || isExistMovieWatchList"> Movie has been already added</div>
+    <button (click)="removeMovieFromWatchList(title)">Remove movie from watch list</button>
+    <a [routerLink]="['/']">See my watch list</a>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+

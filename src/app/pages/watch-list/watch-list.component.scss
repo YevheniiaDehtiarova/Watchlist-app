@@ -1,0 +1,107 @@
+@import '../../../../node_modules/@fortawesome/fontawesome-free/css/all.css';
+@import url('https://fonts.googleapis.com/css2?family=Kalnia:wght@400;500;600&family=Mulish:ital,wght@0,600;0,700;1,400&display=swap');
+
+i.fas {
+    margin-left: 5px;
+    color: #28a745;
+}
+
+i.far {
+    margin-left: 5px;
+    color: #007bff;
+}
+ .watch-list__container {
+    width: 1250px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 15px 30px;
+    font-family: 'Mulish', sans-serif;
+}
+.watch-list__header{
+    display: flex;
+    justify-content: space-around;
+
+    h3{
+        display: inline;
+        font-size: 20px;
+        margin: 0;
+    }
+    a{
+        border-radius: 5px;
+        border: 1px solid #007bff;
+        background-color: #3295ff;
+        padding: 10px 10px;
+        margin-left: 20px;
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+
+
+
+.watch-list__block {
+    display: inline-flex;
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid #007bff;
+    padding: 10px;
+    border-radius: 10px;
+    background: linear-gradient(to bottom, #7fbdff, #cce4ff);
+    
+    li{
+        list-style: none;
+        display: inline-flex;
+        width: 80%;
+     }
+}
+
+.watch-list__image {
+    flex: 0 0 40%;
+
+    img {
+        width: 200px;
+        height: 300px;
+        border-radius: 10px;
+    }
+}
+.watch-list__title{
+    flex: 0 0 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+
+    a{
+        color: #000;
+        font-size: 20px;
+    }
+}
+.watch-list__actions{
+    flex: 0 0 35%;
+    div{
+        margin-right: 10px;
+        display: inline;
+    }
+
+    button{
+        border-radius: 5px;
+        border: 1px solid #007bff;
+        background-color: #3295ff;
+        padding: 10px 10px;
+        margin-right: 10px;
+        color: black;
+        font-size: 20px;
+        cursor: pointer;
+
+        &:disabled{
+            background-color: #99caff;
+        }
+    }
+}
+
