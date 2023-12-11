@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLinkWithHref } from '@angular/router';
+import { NavigationStart, Router, RouterLinkWithHref } from '@angular/router';
 import { AsyncPipe, CommonModule, NgClass, NgFor } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
 import { AppState } from '../../app.state';
+import { filter, pipe, take, takeUntil } from 'rxjs';
+import { BaseComponent } from '../base.component';
 
 
 @Component({
@@ -12,18 +14,20 @@ import { AppState } from '../../app.state';
   templateUrl: './watch-list.component.html',
   styleUrl: './watch-list.component.scss',
 })
-export class WatchListComponent implements OnInit {
+export class WatchListComponent extends BaseComponent implements OnInit {
   watchList: Array<SearchDetail> = [];
-  arrayLocal: Array<SearchDetail> = [];
 
-  constructor(public store: AppState) {}
+  constructor(public store: AppState, private router: Router) {
+    super();
+  }
 
   ngOnInit(): void {
     this.loadWatchList();
   }
 
   loadWatchList(): void{
-    this.store.watchList$.subscribe((list) => {
+    this.store.watchList$.
+    pipe(takeUntil(this.destroy$)).subscribe((list) => {
       console.log(list, 'list after subscribe');
       this.watchList = list;
       console.log(this.watchList, 'array from store')
