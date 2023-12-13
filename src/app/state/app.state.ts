@@ -1,15 +1,16 @@
 import { Injectable } from "@angular/core";
-import { ApiService } from "./api/services/api.service";
-import { BehaviorSubject, tap } from "rxjs";
-import { SearchDetail } from "./api/types/search-detail";
+import { ApiService } from "../api/services/api.service";
+import { BehaviorSubject, Observable, tap } from "rxjs";
+import { SearchDetail } from "../api/types/search-detail";
+import { Title } from "@angular/platform-browser";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppState {
 
-  private currentTitle = new BehaviorSubject<null | any>(null);
-  private watchList = new BehaviorSubject<SearchDetail[]>([]);
+  private currentTitle = new BehaviorSubject<null | Title>(null);
+  public watchList = new BehaviorSubject<SearchDetail[]>([]);
 
   public currentTitle$ = this.currentTitle.asObservable();
   public watchList$ = this.watchList.asObservable();
@@ -19,11 +20,7 @@ export class AppState {
 
   public fetchCurrentTitle(title: string) {
     console.log(title, 'title fetch form store')
-    /*return this.api.getByTitle(title).subscribe(res => {
-      console.log(res);
-      this.currentTitle.next(res);
-    })*/
-    return this.api.getByTitle(title).pipe(tap(res => this.currentTitle.next(res)))
+    return this.api.getByTitle(title).pipe(tap(res => this.currentTitle.next(res as unknown as Title)))
   }
 
   public searchByTitle(title: string) {

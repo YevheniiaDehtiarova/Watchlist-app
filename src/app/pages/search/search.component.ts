@@ -1,7 +1,6 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { AppState } from '../../app.state';
-import { SearchResult } from '../../api/types/search-result';
-import { Observable, takeUntil } from 'rxjs';
+import { AppState } from '../../state/app.state';
+import { takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
@@ -9,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { BaseComponent } from '../base.component';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
+import { AppLocalState } from '../../state/app.local.state';
 
 @Component({
   selector: 'app-search',
@@ -26,7 +26,7 @@ export class SearchComponent extends BaseComponent implements OnInit {
   isShowError: boolean = false;
 
 
-  constructor(private store: AppState, private loader: LoaderService) {
+  constructor(private store: AppState, private loader: LoaderService, private localState: AppLocalState) {
     super();
   }
 
@@ -68,12 +68,17 @@ export class SearchComponent extends BaseComponent implements OnInit {
     console.log(movie, 'movie to add');
     movie.isAdded = true;
     this.store.addToWatchList(movie);
+    const localArray = this.localState.getWatchListFromLocalStorage();
+    localArray.push(movie);
+    this.localState.updateWatchListLocalStorage(localArray)
   }
 
-  onTitleHover(index: number) {
+  onTitleHover(index: number) { 
     console.log('title hover works', index)
-    const button = this.addToYourListBtns.toArray()[index].nativeElement;
-    button.style.display = 'flex';
+    const button = this.addToYourListBtns.toArray()[index]?.nativeElement;
+    if(button){
+      button.style.display = 'flex';
+    }
   }
 
 }

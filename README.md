@@ -56,3 +56,7 @@ Please get your API key there and insert it api.service
 - Design is up to you as well :) No need for something super-special, just make something simple enough for it to look good and also demonstrate your styling skills.
 - Unit tests would be great.
 - Please upload a solution to github private repository.
+
+### comand for test coverage
+
+ng test --no-watch --code-coverage
