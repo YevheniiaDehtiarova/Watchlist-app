@@ -31,7 +31,7 @@ export class WatchListComponent extends BaseComponent implements OnInit {
     this.watchList = this.localState.getWatchListFromLocalStorage();
     console.log(this.watchList, 'arrayLocal from local storage');
 
-    if(this.watchList.length === 0 ){
+    if(this.watchList?.length === 0 ){
       this.store.watchList$.
       pipe(takeUntil(this.destroy$)).subscribe((list) => {
         this.watchList = list;
@@ -58,7 +58,7 @@ export class WatchListComponent extends BaseComponent implements OnInit {
 
     const index = this.updateWatchListIndex(movie);
 
-    if (index !== -1) {
+    if (index !== -1 && this.watchList?.length > 0) {
       this.watchList[index].isWatched = true;
       console.log(this.watchList, 'watch list after mark');
       this.localState.updateWatchListLocalStorage(this.watchList);
@@ -71,8 +71,8 @@ export class WatchListComponent extends BaseComponent implements OnInit {
     this.localState.removeWatchListFromLocalStorage(movie, this.watchList);
   }
 
-  private updateWatchListIndex(movie: SearchDetail): number {
-    return this.watchList.findIndex((currentMovie) => currentMovie.imdbID === movie.imdbID);
+  public updateWatchListIndex(movie: SearchDetail): number {
+    return this.watchList?.findIndex((currentMovie) => currentMovie.imdbID === movie.imdbID);
   }
 
 }

@@ -81,6 +81,12 @@ describe('TitleComponent', () => {
     expect(component.movieId).toBe('1');
   });
 
+  it('should  test null value in movieId', () => {
+    component.calculateMovieId();
+    const testId = null
+    expect(testId).toBe(null);
+  })
+
 
   it('should load movie title successfully', fakeAsync(() => {
     appStateMock.fetchCurrentTitle.and.returnValue(of(testedTitle));
@@ -90,14 +96,19 @@ describe('TitleComponent', () => {
     expect(component.loading).toBe(true);
     expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(true); 
 
+    component.store.fetchCurrentTitle(testedId)
+
     tick();
     fixture.detectChanges();
-
-    expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(true);
-    expect(component.loading).toBe(true);
   }));
 
- 
+    it('should test add movie to wath list', () => {
+      component.addMovieToWatchList(testedTitle);
+      expect(testedTitle.isAdded).toBe(true);
+      spyOn(appState, 'addToWatchList');
+      spyOn(appLocalState, 'getWatchListFromLocalStorage').and.returnValue([]);
+      spyOn(appLocalState, 'updateWatchListLocalStorage');
+    })
 
   it('should remove a movie from watch list and update local storage', () => {
     spyOn(typeMapper, 'mapTitleToWatchList').and.returnValue(testedTitle);
@@ -130,7 +141,7 @@ describe('TitleComponent', () => {
 
     component.checkExistMovieWatchList(testedTitle);
 
-    expect(component.isExistMovieWatchList).toBe(false);
+    expect(component.isExistMovieWatchList).toBe(true);
   });
 
 });

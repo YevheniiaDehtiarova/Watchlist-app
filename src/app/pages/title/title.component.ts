@@ -26,7 +26,7 @@ export class TitleComponent extends BaseComponent implements OnInit {
   isExistMovieWatchList: boolean = false;
 
   constructor(public activateRoute: ActivatedRoute,
-    private store: AppState,
+    public store: AppState,
     private typeMapper: TypeMapper,
     private loaderService: LoaderService,
     private localState: AppLocalState) {

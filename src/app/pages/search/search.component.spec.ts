@@ -48,8 +48,7 @@ describe('SearchComponent', () => {
     storeServiceMock = TestBed.inject(AppState) as jasmine.SpyObj<AppState>;
     loaderServiceMock = TestBed.inject(LoaderService) as jasmine.SpyObj<LoaderService>;
     localStateMock = TestBed.inject(AppLocalState) as jasmine.SpyObj<AppLocalState>;
-    testedMovie = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',
-    imdbID: '1',isWatched: false,isAdded: false}
+    testedMovie = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false}
   });
 
   it('should create', () => {

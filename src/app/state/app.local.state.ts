@@ -1,6 +1,4 @@
 import { Injectable } from "@angular/core";
-import { ApiService } from "../api/services/api.service";
-import { BehaviorSubject, tap } from "rxjs";
 import { SearchDetail } from "../api/types/search-detail";
 
 @Injectable({
