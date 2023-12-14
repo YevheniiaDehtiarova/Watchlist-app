@@ -9,6 +9,7 @@ import { BaseComponent } from '../base.component';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
 import { AppLocalState } from '../../state/app.local.state';
+import { ApiService } from '../../api/services/api.service';
 
 @Component({
   selector: 'app-search',
@@ -23,29 +24,22 @@ export class SearchComponent extends BaseComponent implements OnInit {
   movies: Array<SearchDetail> = [];
   loading: boolean = false;
   searchTerm: string = '';
+  suggestions: string[] = [];
   isShowError: boolean = false;
 
 
-  constructor(private store: AppState, private loader: LoaderService, private localState: AppLocalState) {
+  constructor(private store: AppState, private loader: LoaderService, private localState: AppLocalState,private apiService: ApiService) {
     super();
   }
 
   ngOnInit(): void { }
 
-  /*  search(event: any): void {
-     this.movie$ = this.store.searchByTitle(event.target.value);
- 
-     this.movie$.pipe(takeUntil(this.destroy$)).subscribe((movies) => {
-       console.log(movies, 'movie');
-       this.movies = movies.Search;
-       console.log(this.movies, 'list of movies')
-     })
-   } */
 
 
   search(): void {
     this.loading = true;
     this.loader.setLoading(true);
+    this.suggestions = [];
 
     this.store.searchByTitle(this.searchTerm)
       .pipe(takeUntil(this.destroy$))
@@ -64,11 +58,37 @@ export class SearchComponent extends BaseComponent implements OnInit {
         });
   }
 
+  onInputChange() {
+    this.getSuggestions();
+    this.suggestions = [];
+  }
+
+  selectSuggestion(suggestion: string) {
+    this.searchTerm = suggestion;
+    this.suggestions = [];
+  }
+
+  getSuggestions(){
+    if (this.searchTerm && this.searchTerm.length >= 3) {
+      this.apiService.getSuggestions(this.searchTerm).subscribe(
+        (results) => {
+          this.suggestions = results;
+          console.log(this.suggestions, 'suggestions')
+        },
+        (error) => {
+          console.error('Error fetching suggestions', error);
+        }
+      );
+    } else {
+      this.suggestions = [];
+    }
+  }
+
   addToList(movie: SearchDetail): void {
     console.log(movie, 'movie to add');
     movie.isAdded = true;
     this.store.addToWatchList(movie);
-    const localArray = this.localState.getWatchListFromLocalStorage();
+    const localArray = this.localState.getWatchListFromLocalStorage(); // add check like a store if implementation stay
     localArray.push(movie);
     this.localState.updateWatchListLocalStorage(localArray)
   }

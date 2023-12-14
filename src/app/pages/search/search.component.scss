@@ -20,7 +20,10 @@
         font-size: 25px;
         border-radius: 10px;
         padding: 15px;
-        width: 300px;
+        max-width: 300px;
+        width: 100%;
+        position: relative;
+        font-family: 'Mulish', sans-serif;
 
         &::placeholder{
             color: black;
@@ -32,15 +35,38 @@
         background-color: #3295ff;
         padding: 10px 10px;
         margin-left: 30px;
-        color: black;
+        color: #fff;
         font-size: 25px;
         font-weight: bold;
         text-decoration: none;
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 300px;
+        max-width: 300px;
+        width: 100%;;
+        font-family: 'Mulish', sans-serif;
     }
+}
+.suggestions{
+    position: relative;
+    top: -20px;
+    padding-left: 0;
+    max-width: 330px;
+    width: 100%;
+
+
+     li {
+        background-color:  #3295ff;
+        padding: 10px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        color: #fff;
+        border-radius: 10px;
+      }
+      
+       li:hover {
+        background-color: #007bff;
+      }
 }
 .search-result__block{
     display: flex;
@@ -68,7 +94,8 @@
 
         .search-result__title{
             color: black;
-            width: 300px;
+            max-width: 300px;
+            width: 100%;
             margin: 20px 0;
             font-size: 20px;
         }
@@ -79,7 +106,7 @@
             border: 1px solid #007bff;
             background-color: #3295ff;
             padding: 10px 10px;
-            color: black;
+            color: #fff;
             font-size: 20px;
             font-weight: bold;
             text-decoration: none;
@@ -89,4 +116,50 @@
             cursor: pointer;
         }
     }
+}
+@media screen and (max-width: 576px) {
+    .search-container{
+        padding: 10px 15px;
+    }
+    .search-result__block{
+        ul{
+            flex: 0 0 50%;
+            margin-right: 0;
+        }
+       
+        li{
+            .search-result__title{
+                font-size: 16px;
+                margin: 10px 0;
+                max-width: 175px;
+            }
+            .search-add-btn{
+                padding: 5px;
+                font-size: 16px;
+            }
+
+            img{
+                width: 175px;
+                height: 200px;
+            }
+        }
+    }
+    .search-header{
+      input, button, a{
+        font-size: 16px;
+        padding: 5px;
+      }
+      button, a{
+        margin-left: 10px;
+      }
+    }
+    .suggestions{
+        display: flex;
+        flex-direction: column;
+        width: 33%;
+        li{
+            padding: 5px;
+        }
+    }
+  
 }

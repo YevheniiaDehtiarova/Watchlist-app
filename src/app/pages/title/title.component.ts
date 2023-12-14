@@ -5,7 +5,7 @@ import { Title } from '../../api/types/title';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { TypeMapper } from '../../api/types/type.mapper';
 import { BaseComponent } from '../base.component';
-import { takeUntil } from 'rxjs';
+import { catchError, of, takeUntil } from 'rxjs';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
 import { SearchDetail } from '../../api/types/search-detail';
@@ -34,12 +34,13 @@ export class TitleComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadMovieTitle();
     this.calculateMovieId();
+    this.loadMovieTitle();
   }
 
   public calculateMovieId(): string | null {
     this.movieId = this.activateRoute?.snapshot?.paramMap.get('id') as string;
+  
     if (!this.movieId) {
       return null;
     }
@@ -51,11 +52,19 @@ export class TitleComponent extends BaseComponent implements OnInit {
     this.loading = true;
 
     this.store.fetchCurrentTitle(this.movieId).
-      pipe(takeUntil(this.destroy$)).subscribe(title => {
-        this.title = title;
+      pipe(takeUntil(this.destroy$),
+      catchError((error) => {
+        console.error('Error loading movie title:', error);
         this.loaderService.setLoading(false);
         this.loading = false;
-        this.checkExistMovieWatchList(title)
+        return of(null);
+      })).subscribe(title => {
+        if(title){
+          this.title = title;
+          this.checkExistMovieWatchList(title);
+        }
+        this.loaderService.setLoading(false);
+        this.loading = false;
       })
   }
 
@@ -70,6 +79,7 @@ export class TitleComponent extends BaseComponent implements OnInit {
   }
 
   removeMovieFromWatchList(currentMovie: Title): void {
+    currentMovie.isAdded = false;
     const modifiedMovie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.removeFromWatchList(modifiedMovie);
     this.isExistMovieWatchList = false;

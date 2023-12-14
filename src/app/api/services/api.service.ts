@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Title } from "../types/title";
 import { SearchResult } from "../types/search-result";
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 const API_KEY = 'd7f05bec'
 
@@ -18,6 +18,13 @@ export class ApiService {
   public search(search: string): Observable<SearchResult> {
     console.log(search, 'search from service')
     return this.http.get<SearchResult>(this.url, { params: { s: search } })
+  }
+
+  public getSuggestions(searchTerm: string): Observable<string[]> {
+    return this.http.get<SearchResult>(this.url, { params: { s: searchTerm } })
+      .pipe(
+        map(response => (response.Search || []).map(item => item.Title))
+      );
   }
 
   public getByTitle(title: string): Observable<Title> {
