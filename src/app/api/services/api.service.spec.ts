@@ -40,6 +40,26 @@ describe('ApiService', () => {
     req.flush(mockSearchResult);
   });
 
+  it('should return suggestions for a given search term', () => {
+    const searchTerm = 'test';
+    const mockResponse = {
+      Search: [
+        { Title: 'Test Movie 1' },
+        { Title: 'Test Movie 2' },
+      ],
+    };
+
+     service.getSuggestions(searchTerm).subscribe((suggestions) => {
+      expect(suggestions).toEqual(['Test Movie 1', 'Test Movie 2']);
+    });
+    const req = httpMock.expectOne((request) => request.url === service.url);
+
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('s')).toBe(searchTerm);
+
+    req.flush(mockResponse);
+  })
+
   it('should get a movie by title', () => {
     const title = 'The Matrix';
     const mockTitle: Title = {Title: 'abc',Year: 'abc',Rated: 'abc',Released: 'abc',Runtime: 'abc',Genre: 'abc',Director: 'abc',Writer: 'abc',
@@ -57,6 +77,25 @@ describe('ApiService', () => {
     req.flush(mockTitle);
   });
 
+  it('should return an empty array for a non-existing search term', () => {
+    const searchTerm = 'nonexistent';
+    const mockResponse = {
+      Search: [], 
+    };
+
+    service.getSuggestions(searchTerm).subscribe((suggestions) => {
+      expect(suggestions).toEqual([]);
+    });
+
+    const req = httpMock.expectOne((request) => request.url === service.url);
+
+    expect(req.request.method).toBe('GET');
+    expect(req.request.params.get('s')).toBe(searchTerm);
+
+    req.flush(mockResponse);
+  });
+
+
   it('should build a query string from parameters', () => {
     const params = {
       title: 'The Matrix',
@@ -69,4 +108,5 @@ describe('ApiService', () => {
 
     expect(queryString).toEqual(expectedQueryString);
   });
-});
+})
+

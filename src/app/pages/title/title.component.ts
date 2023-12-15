@@ -52,16 +52,15 @@ export class TitleComponent extends BaseComponent implements OnInit {
     this.loading = true;
 
     this.store.fetchCurrentTitle(this.movieId).
-      pipe(takeUntil(this.destroy$),
-      catchError((error) => {
-        console.error('Error loading movie title:', error);
-        this.loaderService.setLoading(false);
-        this.loading = false;
-        return of(null);
-      })).subscribe(title => {
-        if(title){
-          this.title = title;
-          this.checkExistMovieWatchList(title);
+      pipe(takeUntil(this.destroy$))
+      .subscribe(title => {
+        console.log(title, 'title from ts')
+        if(title?.Error && title){
+          console.log('sould add handle error')
+        } else {
+          this.title = title as Title;
+          console.log(this.title, 'tile')
+          this.checkExistMovieWatchList(title as Title);
         }
         this.loaderService.setLoading(false);
         this.loading = false;

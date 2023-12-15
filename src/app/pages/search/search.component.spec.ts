@@ -4,10 +4,10 @@ import { SearchComponent } from './search.component';
 import { AppState } from '../../state/app.state';
 import { AppLocalState } from '../../state/app.local.state';
 import { LoaderService } from '../../api/services/loader.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../api/services/api.service';
 import { SearchDetail } from '../../api/types/search-detail';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ActivatedRoute, RouterLinkWithHref } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { ElementRef, QueryList } from '@angular/core';
@@ -23,15 +23,19 @@ describe('SearchComponent', () => {
   let loaderServiceMock: jasmine.SpyObj<LoaderService>;
   let localStateMock: jasmine.SpyObj<AppLocalState>;
   let testedMovie: SearchDetail;
+  let apiServiceMock: jasmine.SpyObj<ApiService>;
   
 
   beforeEach(async () => {
     const storeSpy = jasmine.createSpyObj('StoreService', ['searchByTitle', 'addToWatchList']);
     const loaderSpy = jasmine.createSpyObj('LoaderService', ['setLoading']);
     const localStateSpy = jasmine.createSpyObj('AppLocalState', ['getWatchListFromLocalStorage', 'updateWatchListLocalStorage']);
+    const apiSpy = jasmine.createSpyObj('ApiService', ['getSuggestions']);
+
     await TestBed.configureTestingModule({
-      imports: [SearchComponent],
-      providers: [AppState,AppLocalState,
+      imports: [SearchComponent, HttpClientModule],
+      providers: [AppLocalState, 
+        { provide: ApiService, useValue: apiSpy },
         { provide: ActivatedRoute, useValue: {} },
         { provide: AppState, useValue: storeSpy },
         { provide: LoaderService, useValue: loaderSpy },
@@ -42,12 +46,14 @@ describe('SearchComponent', () => {
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    http = TestBed.get(HttpClient);
     appState = new AppState(apiService);
     appLocalState = new AppLocalState();
     apiService = new ApiService(http);
     storeServiceMock = TestBed.inject(AppState) as jasmine.SpyObj<AppState>;
     loaderServiceMock = TestBed.inject(LoaderService) as jasmine.SpyObj<LoaderService>;
     localStateMock = TestBed.inject(AppLocalState) as jasmine.SpyObj<AppLocalState>;
+    apiServiceMock = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
     testedMovie = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false}
   });
 
@@ -86,6 +92,57 @@ describe('SearchComponent', () => {
     expect(component.isShowError).toBe(true);
 
   });
+
+
+  it('should set suggestions on successful getSuggestions call', () => {
+    const mockResults = ['result1', 'result2'];
+    apiServiceMock.getSuggestions.and.returnValue(of(mockResults));
+
+    component.searchTerm = 'abc';
+
+    component.getSuggestions();
+
+    expect(component.suggestions).toEqual(mockResults);
+  });
+
+  it('should handle error on failed getSuggestions call', () => {
+    const mockError = new Error('Test error');
+    apiServiceMock.getSuggestions.and.returnValue(throwError(mockError));
+
+    component.searchTerm = 'abc';
+
+    component.getSuggestions();
+
+    expect(component.suggestions).toEqual([]);
+  });
+
+  it('should call getSuggestions and reset suggestions and error state on onInputChange', () => {
+
+    apiServiceMock.getSuggestions.and.returnValue(of(['result1', 'result2']));
+
+    component.suggestions = ['existing suggestion'];
+    component.isShowError = true;
+
+    component.onInputChange();
+
+    expect(component.suggestions).toEqual([]);
+
+    expect(component.isShowError).toBe(false);
+  });
+
+  it('should set searchTerm and reset suggestions on selectSuggestion', () => {
+    const suggestion = 'selected suggestion';
+
+    component.suggestions = ['existing suggestion'];
+
+    component.selectSuggestion(suggestion);
+
+    expect(component.searchTerm).toEqual(suggestion);
+
+    expect(component.suggestions).toEqual([]);
+  });
+
+
 
   it('should have a router link to /search', () => {
     fixture.detectChanges();

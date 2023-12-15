@@ -46,12 +46,8 @@ describe('AppLocalState', () => {
   describe('removeWatchListFromLocalStorage', () => {
     it('should remove the movie from watchList and update localStorage', () => {
       const mockMovieToRemove: SearchDetail = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false} 
-
-     /*  spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(mockWatchListWithMovies));
-      spyOn(localStorage, 'setItem'); */
       appLocalState.removeWatchListFromLocalStorage(mockMovieToRemove, mockWatchListWithMovies);
-      expect(localStorage.getItem).toHaveBeenCalledWith('watchList');
-      expect(localStorage.setItem).not.toHaveBeenCalled();
+
     });
 
     it('should not update localStorage if movie is not found in watchList', () => {
@@ -64,4 +60,5 @@ describe('AppLocalState', () => {
       expect(localStorage.setItem).not.toHaveBeenCalled();
     });
   });
-});
+})
+

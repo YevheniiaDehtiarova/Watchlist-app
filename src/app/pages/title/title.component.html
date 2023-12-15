@@ -8,7 +8,7 @@
     <app-loader></app-loader>
  </div>
 
-<div *ngIf="title" class="title-container__block">
+<div *ngIf="title; else notFound" class="title-container__block">
 
 <div class="title-container__poster">
     <img src="{{title?.Poster}}" alt="">
@@ -49,6 +49,8 @@
 </div>
 
 </div>
+
+<ng-template #notFound>Movie detail had not been founded</ng-template>
 
 </div>
 

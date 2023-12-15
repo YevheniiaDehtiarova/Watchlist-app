@@ -43,7 +43,8 @@ export class SearchComponent extends BaseComponent implements OnInit {
 
     this.store.searchByTitle(this.searchTerm)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((movies) => {
+      .subscribe({
+        next:(movies) => {
         console.log(movies, 'movie');
         if (movies.Response === 'False') {
           this.isShowError = true;
@@ -51,16 +52,18 @@ export class SearchComponent extends BaseComponent implements OnInit {
         this.movies = movies.Search;
         console.log(this.movies, 'list of movies');
       },
-        () => {},
-        () => {
+        error: () => {},
+        complete:() => {
           this.loader.setLoading(false);
           this.loading = false;
-        });
+        }
+      });
   }
 
   onInputChange() {
     this.getSuggestions();
     this.suggestions = [];
+    this.isShowError = false;
   }
 
   selectSuggestion(suggestion: string) {
@@ -70,15 +73,16 @@ export class SearchComponent extends BaseComponent implements OnInit {
 
   getSuggestions(){
     if (this.searchTerm && this.searchTerm.length >= 3) {
-      this.apiService.getSuggestions(this.searchTerm).subscribe(
-        (results) => {
+      this.apiService.getSuggestions(this.searchTerm)
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: (results) => {
           this.suggestions = results;
           console.log(this.suggestions, 'suggestions')
         },
-        (error) => {
+        error: (error) => {
           console.error('Error fetching suggestions', error);
         }
-      );
+    });
     } else {
       this.suggestions = [];
     }
