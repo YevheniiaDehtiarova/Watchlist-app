@@ -5,7 +5,7 @@ import { Title } from '../../api/types/title';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { TypeMapper } from '../../api/types/type.mapper';
 import { BaseComponent } from '../base.component';
-import { catchError, of, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
 import { SearchDetail } from '../../api/types/search-detail';
@@ -28,7 +28,6 @@ export class TitleComponent extends BaseComponent implements OnInit {
     public store: AppState,
     private typeMapper: TypeMapper,
     private loaderService: LoaderService,
-    //private localState: AppLocalState
     ) {
     super();
   }
@@ -59,7 +58,6 @@ export class TitleComponent extends BaseComponent implements OnInit {
           console.log('sould add handle error')
         } else {
           this.title = title as Title;
-          console.log(this.title, 'tile')
           this.checkExistMovieWatchList(title as Title); 
         }
         this.loaderService.setLoading(false);
@@ -72,9 +70,6 @@ export class TitleComponent extends BaseComponent implements OnInit {
     currentMovie.isAdded = true;
     const modifiedMovie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.addToWatchList(modifiedMovie);
-  /*   const localArray = this.localState.getWatchListFromLocalStorage();
-    localArray?.push(currentMovie);
-    this.localState.updateWatchListLocalStorage(localArray); */
   }
 
   removeMovieFromWatchList(currentMovie: Title): void {
@@ -82,8 +77,6 @@ export class TitleComponent extends BaseComponent implements OnInit {
     const modifiedMovie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.removeFromWatchList(modifiedMovie);
     this.isExistMovieWatchList = false;
-  /*   const localArray = this.localState.getWatchListFromLocalStorage();
-    this.localState.removeWatchListFromLocalStorage(currentMovie, localArray) */
   }
 
   isStarFilled(value: string, index: number): boolean {

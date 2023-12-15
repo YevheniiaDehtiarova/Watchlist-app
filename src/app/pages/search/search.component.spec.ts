@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchComponent } from './search.component';
 import { AppState } from '../../state/app.state';
-import { AppLocalState } from '../../state/app.local.state';
 import { LoaderService } from '../../api/services/loader.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../api/services/api.service';
@@ -16,12 +15,10 @@ describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
   let appState: AppState;
-  let appLocalState: AppLocalState;
   let http: HttpClient;
   let apiService: ApiService;
   let storeServiceMock: jasmine.SpyObj<AppState>;
   let loaderServiceMock: jasmine.SpyObj<LoaderService>;
-  let localStateMock: jasmine.SpyObj<AppLocalState>;
   let testedMovie: SearchDetail;
   let apiServiceMock: jasmine.SpyObj<ApiService>;
   
@@ -29,17 +26,15 @@ describe('SearchComponent', () => {
   beforeEach(async () => {
     const storeSpy = jasmine.createSpyObj('StoreService', ['searchByTitle', 'addToWatchList']);
     const loaderSpy = jasmine.createSpyObj('LoaderService', ['setLoading']);
-    const localStateSpy = jasmine.createSpyObj('AppLocalState', ['getWatchListFromLocalStorage', 'updateWatchListLocalStorage']);
     const apiSpy = jasmine.createSpyObj('ApiService', ['getSuggestions']);
 
     await TestBed.configureTestingModule({
       imports: [SearchComponent, HttpClientModule],
-      providers: [AppLocalState, 
+      providers: [
         { provide: ApiService, useValue: apiSpy },
         { provide: ActivatedRoute, useValue: {} },
         { provide: AppState, useValue: storeSpy },
-        { provide: LoaderService, useValue: loaderSpy },
-        { provide: AppLocalState, useValue: localStateSpy },]
+        { provide: LoaderService, useValue: loaderSpy }]
     })
     .compileComponents();
     
@@ -48,11 +43,9 @@ describe('SearchComponent', () => {
     fixture.detectChanges();
     http = TestBed.get(HttpClient);
     appState = new AppState(apiService);
-    appLocalState = new AppLocalState();
     apiService = new ApiService(http);
     storeServiceMock = TestBed.inject(AppState) as jasmine.SpyObj<AppState>;
     loaderServiceMock = TestBed.inject(LoaderService) as jasmine.SpyObj<LoaderService>;
-    localStateMock = TestBed.inject(AppLocalState) as jasmine.SpyObj<AppLocalState>;
     apiServiceMock = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
     testedMovie = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false}
   });
@@ -158,12 +151,10 @@ describe('SearchComponent', () => {
   });
 
   it('should add a movie to the watch list and update local storage', () => {
-    localStateMock.getWatchListFromLocalStorage.and.returnValue([]);
 
     component.addToList(testedMovie);
     expect(storeServiceMock.addToWatchList).toHaveBeenCalledWith(testedMovie);
 
-    expect(localStateMock.updateWatchListLocalStorage).toHaveBeenCalledWith([testedMovie]);
     expect(testedMovie.isAdded).toBe(true);
   });
 

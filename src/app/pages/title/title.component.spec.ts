@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { TitleComponent } from './title.component';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api/services/api.service';
-import { AppLocalState } from '../../state/app.local.state';
 import { AppState } from '../../state/app.state';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -17,7 +16,6 @@ describe('TitleComponent', () => {
   let component: TitleComponent;
   let fixture: ComponentFixture<TitleComponent>;
   let appState: AppState;
-  let appLocalState: AppLocalState;
   let apiService: ApiService;
   let http: HttpClient;
   let appStateMock: jasmine.SpyObj<AppState>;
@@ -31,7 +29,7 @@ describe('TitleComponent', () => {
     loaderServiceMock = jasmine.createSpyObj('LoaderService', ['setLoading', 'getLoading']);
     await TestBed.configureTestingModule({
       imports: [TitleComponent,HttpClientTestingModule],
-      providers: [AppState, ApiService, TypeMapper, AppLocalState,
+      providers: [AppState, ApiService, TypeMapper,
         { provide: LoaderService, useValue: loaderServiceMock },
         {
           provide: ActivatedRoute,
@@ -51,7 +49,6 @@ describe('TitleComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     appState = new AppState(apiService);
-    appLocalState = new AppLocalState();
     apiService = new ApiService(http);
     typeMapper = TestBed.inject(TypeMapper);
     testedId = 1;
@@ -88,20 +85,6 @@ describe('TitleComponent', () => {
   })
 
 
-/*   it('should load movie title successfully', fakeAsync(() => {
-    appStateMock.fetchCurrentTitle.and.returnValue(of(testedTitle));
-    loaderServiceMock.setLoading.and.stub();
-    
-    component.loadMovieTitle();
-    expect(component.loading).toBe(true);
-    expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(true); 
-
-    component.store.fetchCurrentTitle(testedId)
-
-    tick();
-    fixture.detectChanges();
-  })); */
-
   it('should load movie title successfully', fakeAsync(() => {
     appStateMock.fetchCurrentTitle.and.returnValue(of(testedTitle));
 
@@ -136,14 +119,11 @@ describe('TitleComponent', () => {
       component.addMovieToWatchList(testedTitle);
       expect(testedTitle.isAdded).toBe(true);
       spyOn(appState, 'addToWatchList');
-      spyOn(appLocalState, 'getWatchListFromLocalStorage').and.returnValue([]);
-      spyOn(appLocalState, 'updateWatchListLocalStorage');
     })
 
   it('should remove a movie from watch list and update local storage', () => {
     spyOn(typeMapper, 'mapTitleToWatchList').and.returnValue(testedTitle);
     spyOn(appState, 'removeFromWatchList');
-    spyOn(appLocalState, 'getWatchListFromLocalStorage').and.returnValue([]);
 
     component.removeMovieFromWatchList(testedTitle);
 
@@ -165,14 +145,11 @@ describe('TitleComponent', () => {
     expect(result).toBe(false);
   });
 
-/*   it('should set isExistMovieWatchList to true if the movie is found in the watch list', () => {
-    
-    spyOn(appLocalState, 'getWatchListFromLocalStorage').and.returnValue([testedTitle]);
+  it('should set isExistMovieWatchList to true if the movie is found in the watch list', () => {
 
     component.checkExistMovieWatchList(testedTitle);
-
     expect(component.isExistMovieWatchList).toBe(false);
-  }); */
+  });
 
 });
 

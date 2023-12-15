@@ -3,34 +3,33 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { WatchListComponent } from './watch-list.component';
 import { SearchDetail } from '../../api/types/search-detail';
 import { AppState } from '../../state/app.state';
-import { BehaviorSubject, of } from 'rxjs';
 import { ApiService } from '../../api/services/api.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BehaviorSubject, of } from 'rxjs';
 import { RouterLinkWithHref } from '@angular/router';
 import { By } from '@angular/platform-browser';
-import { AppLocalState } from '../../state/app.local.state';
+
 
 describe('WatchListComponent', () => {
   let component: WatchListComponent;
   let fixture: ComponentFixture<WatchListComponent>;
   let appState: AppState;
-  let appLocalState: AppLocalState;
   let apiService: ApiService;
   let storeServiceMock: jasmine.SpyObj<AppState>;
-  let localStateMock: jasmine.SpyObj<AppLocalState>;
   let http: HttpClient;
   let testedMovie: SearchDetail;
+  let mockWatchListWithMovie: Array<SearchDetail>;
+  let mockWatchListWithMovies: Array<SearchDetail>;
 
   beforeEach(async () => {
     const storeSpy = jasmine.createSpyObj('AppState', ['searchByTitle', 'addToWatchList','watchList$' , 'updateMovieFromWatchList', 'removeFromWatchList']);
-    const localStateSpy = jasmine.createSpyObj('AppLocalState', ['getWatchListFromLocalStorage', 'updateWatchListLocalStorage','removeWatchListFromLocalStorage' ]);
+    storeSpy.watchList$ = new BehaviorSubject<Array<SearchDetail>>([]);
     await TestBed.configureTestingModule({
       imports: [WatchListComponent, HttpClientTestingModule, RouterTestingModule],
       providers: [ ApiService,
-        { provide: AppState, useValue: storeSpy },
-        { provide: AppLocalState, useValue: localStateSpy }]
+        { provide: AppState, useValue: storeSpy }]
     })
     .compileComponents();
     
@@ -38,24 +37,26 @@ describe('WatchListComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     appState = new AppState(apiService);
-    appLocalState = new AppLocalState();
     apiService = new ApiService(http);
     storeServiceMock = TestBed.inject(AppState) as jasmine.SpyObj<AppState>;
-    localStateMock = TestBed.inject(AppLocalState) as jasmine.SpyObj<AppLocalState>;
     testedMovie = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',
       Year: '2000',imdbID: '1',isWatched: false,isAdded: false
     }
+    mockWatchListWithMovie = [{ Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false}]
+    mockWatchListWithMovies = [{ Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '2',isWatched: false,isAdded: false}]
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
+
   it('should call loadWatchList on ngOnInit', () => {
     spyOn(component, 'loadWatchList');
     component.ngOnInit();
     expect(component.loadWatchList).toHaveBeenCalled();
   });
+
   
   it('should have a router link to /search', () => {
     fixture.detectChanges();
@@ -70,8 +71,6 @@ describe('WatchListComponent', () => {
   });
 
   it('should test loadWatchList method', () => {
-    const localArray = localStateMock.getWatchListFromLocalStorage.and.returnValue([]);
-    expect(localArray.length).toEqual(0);
     const movies: Array<SearchDetail> = [];
     movies.push(testedMovie);
 
@@ -83,7 +82,7 @@ describe('WatchListComponent', () => {
       expect(list).toEqual(movies)
       expect(component.watchList).toEqual(list)
     })
-  });
+  }); 
 
   it('should test method markAsWatched', fakeAsync(() => {
     component.markAsWatched(testedMovie);
@@ -103,15 +102,14 @@ describe('WatchListComponent', () => {
 
     let index = 1;
     expect(index).not.toEqual(-1);
-    expect(component?.watchList).toBeUndefined()
+    expect(component?.watchList).toBeDefined()
     expect(testedMovie.isWatched).toEqual(false); 
   }));
 
   it('should remove a movie from watch list and update local storage', () => {
     spyOn(appState, 'removeFromWatchList');
-    spyOn(appLocalState, 'removeWatchListFromLocalStorage');
-
     component.removeMovieFromWatchList(testedMovie);
+    component.removeWatchListFromLocalStorage(testedMovie,mockWatchListWithMovies )
   });
 
 
@@ -151,7 +149,7 @@ describe('WatchListComponent', () => {
   it('should set the watchList in localStorage', () => {
     const watchListData = [];
     watchListData.push(testedMovie)
-    appLocalState.updateWatchListLocalStorage(watchListData);
+    component.updateWatchListLocalStorage(watchListData);
     const storedWatchList = localStorage.getItem('watchList');
     expect(JSON.parse(storedWatchList!)).toEqual(watchListData);
   });
@@ -159,9 +157,40 @@ describe('WatchListComponent', () => {
   it('should remove movie from  the watchList in localStorage', () => {
     const watchListData = [];
     watchListData.push(testedMovie)
-    appLocalState.updateWatchListLocalStorage(watchListData);
-    appLocalState.removeWatchListFromLocalStorage(testedMovie,watchListData);
-    const updatedWatchList = appLocalState.getWatchListFromLocalStorage();
+    component.updateWatchListLocalStorage(watchListData);
+    component.removeWatchListFromLocalStorage(testedMovie,watchListData);
+    const updatedWatchList = component.getWatchListFromLocalStorage();
     expect(updatedWatchList).toEqual(watchListData); 
   });
-});
+
+
+    it('should return an array of SearchDetail from localStorage', () => {
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(mockWatchListWithMovie));
+      const result = component.getWatchListFromLocalStorage();
+      expect(result).toEqual(mockWatchListWithMovie);
+    });
+  
+
+    it('should update localStorage with the provided watchList', () => {
+      spyOn(localStorage, 'setItem')
+      component.updateWatchListLocalStorage(mockWatchListWithMovie);
+      expect(localStorage.setItem).toHaveBeenCalledWith('watchList', JSON.stringify(mockWatchListWithMovie));
+    });
+  
+
+    it('should remove the movie from watchList and update localStorage', () => {
+      const mockMovieToRemove: SearchDetail = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false} 
+      component.removeWatchListFromLocalStorage(mockMovieToRemove, mockWatchListWithMovies);
+    });
+
+    it('should not update localStorage if movie is not found in watchList', () => {
+     const mockMovieToRemove: SearchDetail ={ Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false} 
+
+      spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(mockWatchListWithMovies));
+      spyOn(localStorage, 'setItem');
+      component.removeWatchListFromLocalStorage(mockMovieToRemove, mockWatchListWithMovies);
+
+      expect(localStorage.setItem).not.toHaveBeenCalled();
+    });
+  });
+

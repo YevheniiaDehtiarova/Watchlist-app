@@ -43,16 +43,14 @@ export class SearchComponent extends BaseComponent implements OnInit {
     this.store.searchByTitle(this.searchTerm)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next:(movies) => {
-        console.log(movies, 'movie');
-        if (movies.Response === 'False') {
-          this.isShowError = true;
-        }
-        this.movies = movies.Search;
-        console.log(this.movies, 'list of movies');
-      },
-        error: () => {},
-        complete:() => {
+        next: (movies) => {
+          if (movies.Response === 'False') {
+            this.isShowError = true;
+          }
+          this.movies = movies.Search;
+        },
+        error: () => { },
+        complete: () => {
           this.loader.setLoading(false);
           this.loading = false;
         }
@@ -70,36 +68,28 @@ export class SearchComponent extends BaseComponent implements OnInit {
     this.suggestions = [];
   }
 
-  getSuggestions(){
+  getSuggestions() {
     if (this.searchTerm && this.searchTerm.length >= 3) {
       this.apiService.getSuggestions(this.searchTerm)
-      .pipe(takeUntil(this.destroy$)).subscribe({
-        next: (results) => {
-          this.suggestions = results;
-          console.log(this.suggestions, 'suggestions')
-        },
-        error: (error) => {
-          console.error('Error fetching suggestions', error);
-        }
-    });
+        .pipe(takeUntil(this.destroy$)).subscribe({
+          next: (results) => {
+            this.suggestions = results;
+          },
+          error: (error) => {}
+        });
     } else {
       this.suggestions = [];
     }
   }
 
   addToList(movie: SearchDetail): void {
-    console.log(movie, 'movie to add');
     movie.isAdded = true;
     this.store.addToWatchList(movie);
-    /* const localArray = this.localState.getWatchListFromLocalStorage(); // add check like a store if implementation stay
-    localArray.push(movie);
-    this.localState.updateWatchListLocalStorage(localArray) */
   }
 
-  onTitleHover(index: number) { 
-    console.log('title hover works', index)
+  onTitleHover(index: number) {
     const button = this.addToYourListBtns.toArray()[index]?.nativeElement;
-    if(button){
+    if (button) {
       button.style.display = 'flex';
     }
   }
