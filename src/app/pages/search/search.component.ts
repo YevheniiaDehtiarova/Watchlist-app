@@ -8,7 +8,6 @@ import { RouterLink } from '@angular/router';
 import { BaseComponent } from '../base.component';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
-import { AppLocalState } from '../../state/app.local.state';
 import { ApiService } from '../../api/services/api.service';
 
 @Component({
@@ -28,7 +27,7 @@ export class SearchComponent extends BaseComponent implements OnInit {
   isShowError: boolean = false;
 
 
-  constructor(private store: AppState, private loader: LoaderService, private localState: AppLocalState,private apiService: ApiService) {
+  constructor(private store: AppState, private loader: LoaderService, private apiService: ApiService) {
     super();
   }
 
@@ -92,9 +91,9 @@ export class SearchComponent extends BaseComponent implements OnInit {
     console.log(movie, 'movie to add');
     movie.isAdded = true;
     this.store.addToWatchList(movie);
-    const localArray = this.localState.getWatchListFromLocalStorage(); // add check like a store if implementation stay
+    /* const localArray = this.localState.getWatchListFromLocalStorage(); // add check like a store if implementation stay
     localArray.push(movie);
-    this.localState.updateWatchListLocalStorage(localArray)
+    this.localState.updateWatchListLocalStorage(localArray) */
   }
 
   onTitleHover(index: number) { 

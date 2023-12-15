@@ -3,7 +3,7 @@ import { RouterLinkWithHref } from '@angular/router';
 import { AsyncPipe, CommonModule, NgClass, NgFor } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
 import { AppState } from '../../state/app.state';
-import {  takeUntil } from 'rxjs';
+import {  take, takeUntil } from 'rxjs';
 import { BaseComponent } from '../base.component';
 import { AppLocalState } from '../../state/app.local.state';
 
@@ -28,28 +28,18 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   }
 
   loadWatchList(): void {
-    this.watchList = this.localState.getWatchListFromLocalStorage();
-    console.log(this.watchList, 'arrayLocal from local storage');
-
-    if(this.watchList?.length === 0 ){
-      this.store.watchList$.
-      pipe(takeUntil(this.destroy$)).subscribe((list) => {
-        this.watchList = list;
-        console.log(this.watchList, 'array from store')
-      })
-    }
-  /*   this.store.watchList$.
-      pipe(takeUntil(this.destroy$)).subscribe((list) => {
-        this.watchList = list;
-        console.log(this.watchList, 'array from store')
-
-        if (this.watchList.length === 0) {
-          this.watchList = this.localState.getWatchListFromLocalStorage();
-          console.log(this.watchList, 'arrayLocal from local storage');
-        } else {
-          this.localState.updateWatchListLocalStorage(this.watchList)
-        }
-      }); */
+    this.store.watchList$.pipe(take(1),takeUntil(this.destroy$)).subscribe((list) => {
+      this.watchList = list;
+      console.log(this.watchList, 'array from store')
+  
+      if (this.watchList.length === 0) {
+        this.watchList = this.localState.getWatchListFromLocalStorage();
+        this.store.watchList.next(this.watchList)
+        console.log(this.watchList, 'arrayLocal from local storage');
+      } else {
+        this.localState.updateWatchListLocalStorage(this.watchList)
+      }
+    });
   }
 
   markAsWatched(movie: SearchDetail): void {

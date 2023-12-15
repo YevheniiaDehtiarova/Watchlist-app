@@ -8,25 +8,25 @@
     <app-loader></app-loader>
  </div>
 
-<div *ngIf="title; else notFound" class="title-container__block">
+<div *ngIf="title && !loading; else notFound" class="title-container__block">
 
 <div class="title-container__poster">
-    <img src="{{title?.Poster}}" alt="">
+    <img src="{{title.Poster}}" alt="">
 </div>
 <div class="title-container__content">
-<p>{{title?.Title}}</p>
+<p>{{title.Title}}</p>
 <div>
     <span class="title-container__subtitle">Writer:</span>
-    <span class="title-container__name"> {{title?.Writer}}</span>  
+    <span class="title-container__name"> {{title.Writer}}</span>  
 </div>
 <div>
     <span class="title-container__subtitle">Country:</span>
-    <span class="title-container__name">{{title?.Country}}</span>   
+    <span class="title-container__name">{{title.Country}}</span>   
 </div>
 
 <div>
     <span class="title-container__subtitle">Year:</span>
-    <span class="title-container__name">{{title?.Year}}</span>  
+    <span class="title-container__name">{{title.Year}}</span>  
 </div>
 
 <ul *ngIf="title?.Ratings">

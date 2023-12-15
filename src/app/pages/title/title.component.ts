@@ -9,7 +9,6 @@ import { catchError, of, takeUntil } from 'rxjs';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
 import { SearchDetail } from '../../api/types/search-detail';
-import { AppLocalState } from '../../state/app.local.state';
 
 @Component({
   selector: 'app-title',
@@ -29,7 +28,8 @@ export class TitleComponent extends BaseComponent implements OnInit {
     public store: AppState,
     private typeMapper: TypeMapper,
     private loaderService: LoaderService,
-    private localState: AppLocalState) {
+    //private localState: AppLocalState
+    ) {
     super();
   }
 
@@ -60,7 +60,7 @@ export class TitleComponent extends BaseComponent implements OnInit {
         } else {
           this.title = title as Title;
           console.log(this.title, 'tile')
-          this.checkExistMovieWatchList(title as Title);
+          this.checkExistMovieWatchList(title as Title); 
         }
         this.loaderService.setLoading(false);
         this.loading = false;
@@ -72,9 +72,9 @@ export class TitleComponent extends BaseComponent implements OnInit {
     currentMovie.isAdded = true;
     const modifiedMovie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.addToWatchList(modifiedMovie);
-    const localArray = this.localState.getWatchListFromLocalStorage();
+  /*   const localArray = this.localState.getWatchListFromLocalStorage();
     localArray?.push(currentMovie);
-    this.localState.updateWatchListLocalStorage(localArray);
+    this.localState.updateWatchListLocalStorage(localArray); */
   }
 
   removeMovieFromWatchList(currentMovie: Title): void {
@@ -82,8 +82,8 @@ export class TitleComponent extends BaseComponent implements OnInit {
     const modifiedMovie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.removeFromWatchList(modifiedMovie);
     this.isExistMovieWatchList = false;
-    const localArray = this.localState.getWatchListFromLocalStorage();
-    this.localState.removeWatchListFromLocalStorage(currentMovie, localArray)
+  /*   const localArray = this.localState.getWatchListFromLocalStorage();
+    this.localState.removeWatchListFromLocalStorage(currentMovie, localArray) */
   }
 
   isStarFilled(value: string, index: number): boolean {
@@ -92,10 +92,11 @@ export class TitleComponent extends BaseComponent implements OnInit {
     return index + 1 <= filledStars;
   }
 
-   checkExistMovieWatchList(title: Title): void {
-    const localArray = this.localState.getWatchListFromLocalStorage();
-    const findedElem = localArray.find((movie: SearchDetail) => movie.imdbID === title.imdbID);
+    checkExistMovieWatchList(title: Title): void {
+    const localArray =  localStorage.getItem('watchList') 
+    const watchList = localArray ? JSON.parse(localArray) : [];
+    const findedElem = watchList.find((movie: SearchDetail) => movie.imdbID === title.imdbID);
     this.isExistMovieWatchList = findedElem ? true : false;
-  }
+  } 
 
 }
