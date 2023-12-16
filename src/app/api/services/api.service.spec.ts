@@ -60,6 +60,21 @@ describe('ApiService', () => {
     req.flush(mockResponse);
   })
 
+  it('should handle empty search results', () => {
+    const searchTerm = 'test';
+    const emptyResponse: SearchResult = {
+      Search: [], Response: 'True', Error: 'abc', totalResults: 'abc'
+    };
+
+    service.getSuggestions(searchTerm).subscribe((suggestions) => {
+      expect(suggestions).toEqual([]);
+    });
+
+    const req = httpMock.expectOne((request) => request.url.includes(service.url));
+    expect(req.request.method).toEqual('GET');
+    req.flush(emptyResponse);
+  });
+
   it('should get a movie by title', () => {
     const title = 'The Matrix';
     const mockTitle: Title = {Title: 'abc',Year: 'abc',Rated: 'abc',Released: 'abc',Runtime: 'abc',Genre: 'abc',Director: 'abc',Writer: 'abc',

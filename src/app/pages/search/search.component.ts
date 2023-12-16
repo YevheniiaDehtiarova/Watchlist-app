@@ -27,7 +27,7 @@ export class SearchComponent extends BaseComponent implements OnInit {
   isShowError: boolean = false;
 
 
-  constructor(private store: AppState, private loader: LoaderService, private apiService: ApiService) {
+  constructor(private store: AppState, private loader: LoaderService) {
     super();
   }
 
@@ -70,7 +70,7 @@ export class SearchComponent extends BaseComponent implements OnInit {
 
   getSuggestions() {
     if (this.searchTerm && this.searchTerm.length >= 3) {
-      this.apiService.getSuggestions(this.searchTerm)
+      this.store.searchSuggestions(this.searchTerm)
         .pipe(takeUntil(this.destroy$)).subscribe({
           next: (results) => {
             this.suggestions = results;

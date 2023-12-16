@@ -3,7 +3,7 @@ import { RouterLinkWithHref } from '@angular/router';
 import { AsyncPipe, CommonModule, NgClass, NgFor } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
 import { AppState } from '../../state/app.state';
-import { takeUntil } from 'rxjs';
+import { take, takeUntil } from 'rxjs';
 import { BaseComponent } from '../base.component';
 
 
@@ -27,7 +27,7 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   }
 
   loadWatchList(): void {
-    this.store.watchList$.pipe(takeUntil(this.destroy$)).subscribe((list) => {
+    this.store.watchList$.pipe(take(1),takeUntil(this.destroy$)).subscribe((list) => {
       this.watchList = list;
 
       if (this.watchList.length === 0) {

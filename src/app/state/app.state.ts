@@ -24,6 +24,10 @@ export class AppState {
   public searchByTitle(title: string) {
     return this.api.search(title);
   }
+  
+  public searchSuggestions(searchTerm: string){
+    return this.api.getSuggestions(searchTerm)
+  }
 
 
   public addToWatchList(movie: SearchDetail) {

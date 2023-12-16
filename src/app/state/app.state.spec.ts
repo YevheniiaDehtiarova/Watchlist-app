@@ -16,9 +16,10 @@ describe('AppState', () => {
  
 
   beforeEach(() => {
+    const spy = jasmine.createSpyObj('ApiService', ['getSuggestions']);
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [AppState, ApiService],
+      providers: [AppState, ApiService]
     });
     appState = TestBed.inject(AppState);
     apiService = TestBed.inject(ApiService);
@@ -55,6 +56,19 @@ describe('AppState', () => {
     result.subscribe((searchResults) => {
       expect(searchResults).toEqual(mockSearchResults);
     });
+  });
+
+  it('should return suggestions from the API', () => {
+    const searchTerm = 'test';
+    const mockSuggestions = ['suggestion1', 'suggestion2'];
+
+    spyOn(apiService, 'getSuggestions').and.returnValue(of(mockSuggestions));
+
+    appState.searchSuggestions(searchTerm).subscribe((suggestions) => {
+      expect(suggestions).toEqual(mockSuggestions);
+    });
+
+    expect(apiService.getSuggestions).toHaveBeenCalledWith(searchTerm);
   });
 
   it('should add a movie to the watch list if it does not exist', () => {

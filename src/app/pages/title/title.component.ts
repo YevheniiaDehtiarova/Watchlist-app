@@ -53,7 +53,6 @@ export class TitleComponent extends BaseComponent implements OnInit {
     this.store.fetchCurrentTitle(this.movieId).
       pipe(takeUntil(this.destroy$))
       .subscribe(title => {
-        console.log(title, 'title from ts')
         if(title?.Error && title){
           console.log('sould add handle error')
         } else {

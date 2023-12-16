@@ -20,18 +20,15 @@ describe('SearchComponent', () => {
   let storeServiceMock: jasmine.SpyObj<AppState>;
   let loaderServiceMock: jasmine.SpyObj<LoaderService>;
   let testedMovie: SearchDetail;
-  let apiServiceMock: jasmine.SpyObj<ApiService>;
-  
+
 
   beforeEach(async () => {
-    const storeSpy = jasmine.createSpyObj('StoreService', ['searchByTitle', 'addToWatchList']);
+    const storeSpy = jasmine.createSpyObj('StoreService', ['searchByTitle', 'addToWatchList', 'searchSuggestions']);
     const loaderSpy = jasmine.createSpyObj('LoaderService', ['setLoading']);
-    const apiSpy = jasmine.createSpyObj('ApiService', ['getSuggestions']);
 
     await TestBed.configureTestingModule({
       imports: [SearchComponent, HttpClientModule],
       providers: [
-        { provide: ApiService, useValue: apiSpy },
         { provide: ActivatedRoute, useValue: {} },
         { provide: AppState, useValue: storeSpy },
         { provide: LoaderService, useValue: loaderSpy }]
@@ -46,7 +43,6 @@ describe('SearchComponent', () => {
     apiService = new ApiService(http);
     storeServiceMock = TestBed.inject(AppState) as jasmine.SpyObj<AppState>;
     loaderServiceMock = TestBed.inject(LoaderService) as jasmine.SpyObj<LoaderService>;
-    apiServiceMock = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
     testedMovie = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false}
   });
 
@@ -89,7 +85,7 @@ describe('SearchComponent', () => {
 
   it('should set suggestions on successful getSuggestions call', () => {
     const mockResults = ['result1', 'result2'];
-    apiServiceMock.getSuggestions.and.returnValue(of(mockResults));
+    storeServiceMock.searchSuggestions.and.returnValue(of(mockResults));
 
     component.searchTerm = 'abc';
 
@@ -100,7 +96,7 @@ describe('SearchComponent', () => {
 
   it('should handle error on failed getSuggestions call', () => {
     const mockError = new Error('Test error');
-    apiServiceMock.getSuggestions.and.returnValue(throwError(mockError));
+    storeServiceMock.searchSuggestions.and.returnValue(throwError(mockError));
 
     component.searchTerm = 'abc';
 
@@ -111,7 +107,7 @@ describe('SearchComponent', () => {
 
   it('should call getSuggestions and reset suggestions and error state on onInputChange', () => {
 
-    apiServiceMock.getSuggestions.and.returnValue(of(['result1', 'result2']));
+    storeServiceMock.searchSuggestions.and.returnValue(of(['result1', 'result2']));
 
     component.suggestions = ['existing suggestion'];
     component.isShowError = true;

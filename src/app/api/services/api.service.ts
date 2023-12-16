@@ -23,7 +23,7 @@ export class ApiService {
   public getSuggestions(searchTerm: string): Observable<string[]> {
     return this.http.get<SearchResult>(this.url, { params: { s: searchTerm } })
       .pipe(
-        map(response => (response.Search || []).map(item => item.Title))
+        map(response => (response.Search).map(item => item.Title))
       );
   }
 

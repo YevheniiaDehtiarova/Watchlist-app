@@ -51,7 +51,7 @@ describe('TitleComponent', () => {
     appState = new AppState(apiService);
     apiService = new ApiService(http);
     typeMapper = TestBed.inject(TypeMapper);
-    testedId = 1;
+    testedId = '1';
     testedTitle = {Title: 'abc',Year: 'abc',Rated: 'abc',Released: 'abc',Runtime: 'abc',Genre: 'abc',Director: 'abc',Writer: 'abc',
     Actors: 'abc',Plot: 'abc',Language: 'abc',Country: 'abc',Awards: 'abc',Poster: 'abc',Ratings: [{
     Source: 'abc',Value: 'abc'}],Metascore: 'abc',imdbRating: 'abc',imdbVotes: 'abc',imdbID: 'abc', Type: 'abc',totalSeasons: 'abc',Response: 'True',Error: 'abc',isAdded: false };
@@ -68,9 +68,10 @@ describe('TitleComponent', () => {
   });
 
   it('should call calculateMovieId on ngOnInit', () => {
-    spyOn(component, 'calculateMovieId');
+    spyOn(component, 'calculateMovieId').and.returnValue(testedId);
     component.ngOnInit();
     expect(component.calculateMovieId).toHaveBeenCalled();
+    expect(component.movieId).toEqual(testedId);
   });
 
   it('should test movieId in activated route', () => {
@@ -83,6 +84,8 @@ describe('TitleComponent', () => {
     const testId = null
     expect(testId).toBe(null);
   })
+
+ 
 
 
   it('should load movie title successfully', fakeAsync(() => {
@@ -113,6 +116,17 @@ describe('TitleComponent', () => {
 
     fixture.detectChanges();
   });
+
+  it ('should test subscription in loadMovieTitle', () => {
+    component.loadMovieTitle();
+    component.store.fetchCurrentTitle(testedId).subscribe((title) => {
+      expect(component.title).toBe(title);
+      spyOn(component, 'checkExistMovieWatchList');
+      expect(component.checkExistMovieWatchList).toHaveBeenCalledWith(title);
+      expect(title.Error).toBeUndefined();    expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(false);
+      expect(component.loading).toBe(false);
+    })
+  })
 
 
     it('should test add movie to wath list', () => {
