@@ -1,10 +1,10 @@
-import { Component, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLinkWithHref } from '@angular/router';
 import { AsyncPipe, CommonModule, NgClass, NgFor } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
-import { AppState } from '../../state/app.state';
 import { take, takeUntil } from 'rxjs';
 import { BaseComponent } from '../base.component';
+import { AppState } from '../../api/state/app.state';
 
 
 @Component({
@@ -27,12 +27,12 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   }
 
   loadWatchList(): void {
-    this.store.watchList$.pipe(take(1),takeUntil(this.destroy$)).subscribe((list) => {
+    this.store.watchList$.pipe(take(1), takeUntil(this.destroy$)).subscribe((list) => {
       this.watchList = list;
 
       if (this.watchList.length === 0) {
         this.watchList = this.getWatchListFromLocalStorage();
-        this.store.watchList.next(this.watchList)
+        this.store.watchList.next(this.watchList);
       } else {
         this.updateWatchListLocalStorage(this.watchList)
       }

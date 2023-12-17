@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AppState } from '../../state/app.state';
 import { Title } from '../../api/types/title';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { TypeMapper } from '../../api/types/type.mapper';
@@ -9,6 +8,7 @@ import { takeUntil } from 'rxjs';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
 import { SearchDetail } from '../../api/types/search-detail';
+import { AppState } from '../../api/state/app.state';
 
 @Component({
   selector: 'app-title',
@@ -27,8 +27,7 @@ export class TitleComponent extends BaseComponent implements OnInit {
   constructor(public activateRoute: ActivatedRoute,
     public store: AppState,
     private typeMapper: TypeMapper,
-    private loaderService: LoaderService,
-    ) {
+    private loaderService: LoaderService) {
     super();
   }
 
@@ -39,7 +38,7 @@ export class TitleComponent extends BaseComponent implements OnInit {
 
   public calculateMovieId(): string | null {
     this.movieId = this.activateRoute?.snapshot?.paramMap.get('id') as string;
-  
+
     if (!this.movieId) {
       return null;
     }
@@ -53,11 +52,11 @@ export class TitleComponent extends BaseComponent implements OnInit {
     this.store.fetchCurrentTitle(this.movieId).
       pipe(takeUntil(this.destroy$))
       .subscribe(title => {
-        if(title?.Error && title){
+        if (title?.Error && title) {
           console.log('sould add handle error')
         } else {
           this.title = title as Title;
-          this.checkExistMovieWatchList(title as Title); 
+          this.checkExistMovieWatchList(title as Title);
         }
         this.loaderService.setLoading(false);
         this.loading = false;
@@ -84,11 +83,11 @@ export class TitleComponent extends BaseComponent implements OnInit {
     return index + 1 <= filledStars;
   }
 
-    checkExistMovieWatchList(title: Title): void {
-    const localArray =  localStorage.getItem('watchList') 
+  checkExistMovieWatchList(title: Title): void {
+    const localArray = localStorage.getItem('watchList')
     const watchList = localArray ? JSON.parse(localArray) : [];
     const findedElem = watchList.find((movie: SearchDetail) => movie.imdbID === title.imdbID);
     this.isExistMovieWatchList = findedElem ? true : false;
-  } 
+  }
 
 }

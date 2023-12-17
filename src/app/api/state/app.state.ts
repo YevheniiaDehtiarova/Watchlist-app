@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { ApiService } from "../api/services/api.service";
-import { BehaviorSubject, Observable, catchError, of, tap } from "rxjs";
-import { SearchDetail } from "../api/types/search-detail";
+import { ApiService } from "../services/api.service";
+import { BehaviorSubject, tap } from "rxjs";
+import { SearchDetail } from "../types/search-detail";
 
 @Injectable({
   providedIn: 'root'

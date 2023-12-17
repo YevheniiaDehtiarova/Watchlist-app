@@ -1,11 +1,5 @@
 <div class="search-container">
 
-
-  <!--   <div class="search-header">
-        <input type="text" (input)="search($event)" placeholder="Search movie">
-        <a [routerLink]="['/']">Back to Watch List</a>
-    </div> -->
-
     <div class="search-header">
         <input type="text" [(ngModel)]="searchTerm" placeholder="Search movie" (input)="onInputChange()">
         <button (click)="search()">Search</button>
@@ -14,17 +8,17 @@
 
     <ul *ngIf="suggestions.length > 0" class="suggestions">
         <li *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)">
-          {{ suggestion }}
+            {{ suggestion }}
         </li>
-      </ul>
+    </ul>
 
     <div *ngIf="loading" class="load-state">
-       <app-loader></app-loader>
+        <app-loader></app-loader>
     </div>
-    
-        <div *ngIf="!loading && isShowError" class="no-results-state">
-            Movies has not been founded
-        </div>
+
+    <div *ngIf="!loading && isShowError" class="no-results-state">
+        Movies has not been founded
+    </div>
 
 
     <div class="search-result__block">
@@ -32,12 +26,11 @@
             <li style="list-style: none;">
                 <img class="search-image" src="{{movie?.Poster}}" alt="Movie Poster">
                 <a [routerLink]="['/title/', movie.imdbID]" (mouseover)="onTitleHover(i)"
-                 class="search-result__title">{{movie?.Title}}</a>
-                <button *ngIf="!movie?.isAdded" #addToYourListBtn  class="search-add-btn" (click)="addToList(movie)">Add to list</button>
+                    class="search-result__title">{{movie?.Title}}</a>
+                <button *ngIf="!movie?.isAdded" #addToYourListBtn class="search-add-btn" (click)="addToList(movie)">Add
+                    to list</button>
                 <div *ngIf="movie?.isAdded">The movie has beed added to watch list</div>
             </li>
         </ul>
     </div>
 </div>
-
-

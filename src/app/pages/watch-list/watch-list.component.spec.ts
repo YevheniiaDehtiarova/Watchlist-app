@@ -2,7 +2,6 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 
 import { WatchListComponent } from './watch-list.component';
 import { SearchDetail } from '../../api/types/search-detail';
-import { AppState } from '../../state/app.state';
 import { ApiService } from '../../api/services/api.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
@@ -10,6 +9,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BehaviorSubject, of } from 'rxjs';
 import { RouterLinkWithHref } from '@angular/router';
 import { By } from '@angular/platform-browser';
+import { AppState } from '../../api/state/app.state';
 
 
 describe('WatchListComponent', () => {

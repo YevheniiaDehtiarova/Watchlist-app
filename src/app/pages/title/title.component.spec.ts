@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { TitleComponent } from './title.component';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../api/services/api.service';
-import { AppState } from '../../state/app.state';
+import { AppState } from '../../api/state/app.state';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { LoaderService } from '../../api/services/loader.service';

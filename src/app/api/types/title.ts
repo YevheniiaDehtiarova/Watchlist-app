@@ -1,3 +1,5 @@
+import { Rating } from "./rating";
+
 export type Title = {
   Title: string,
   Year: string,
@@ -13,12 +15,7 @@ export type Title = {
   Country: string,
   Awards: string,
   Poster: string,
-  Ratings: Array<
-    {
-      Source: string,
-      Value: string
-    }
-  >,
+  Ratings: Array<Rating>,
   Metascore: string,
   imdbRating: string,
   imdbVotes: string,

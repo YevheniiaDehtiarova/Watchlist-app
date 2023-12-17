@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ApiService } from '../api/services/api.service';
-import { AppState } from './app.state';
+import { ApiService } from '../services/api.service';
 import { of } from 'rxjs';
-import { Title } from '../api/types/title';
-import { SearchDetail } from '../api/types/search-detail';
+import { Title } from '../types/title';
+import { SearchDetail } from '../types/search-detail';
+import { AppState } from './app.state';
 
 
 

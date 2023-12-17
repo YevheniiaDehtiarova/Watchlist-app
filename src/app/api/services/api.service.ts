@@ -16,7 +16,6 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   public search(search: string): Observable<SearchResult> {
-    console.log(search, 'search from service')
     return this.http.get<SearchResult>(this.url, { params: { s: search } })
   }
 

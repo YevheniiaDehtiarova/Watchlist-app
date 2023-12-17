@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { AppState } from '../../state/app.state';
+import { AppState } from '../../api/state/app.state';
 import { takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
@@ -8,7 +8,6 @@ import { RouterLink } from '@angular/router';
 import { BaseComponent } from '../base.component';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
-import { ApiService } from '../../api/services/api.service';
 
 @Component({
   selector: 'app-search',
@@ -75,7 +74,7 @@ export class SearchComponent extends BaseComponent implements OnInit {
           next: (results) => {
             this.suggestions = results;
           },
-          error: (error) => {}
+          error: (error) => { }
         });
     } else {
       this.suggestions = [];

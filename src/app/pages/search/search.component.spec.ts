@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchComponent } from './search.component';
-import { AppState } from '../../state/app.state';
+import { AppState } from '../../api/state/app.state';
 import { LoaderService } from '../../api/services/loader.service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ApiService } from '../../api/services/api.service';
@@ -33,8 +33,8 @@ describe('SearchComponent', () => {
         { provide: AppState, useValue: storeSpy },
         { provide: LoaderService, useValue: loaderSpy }]
     })
-    .compileComponents();
-    
+      .compileComponents();
+
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -43,7 +43,7 @@ describe('SearchComponent', () => {
     apiService = new ApiService(http);
     storeServiceMock = TestBed.inject(AppState) as jasmine.SpyObj<AppState>;
     loaderServiceMock = TestBed.inject(LoaderService) as jasmine.SpyObj<LoaderService>;
-    testedMovie = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',Year: '2000',imdbID: '1',isWatched: false,isAdded: false}
+    testedMovie = { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '1', isWatched: false, isAdded: false }
   });
 
   it('should create', () => {
@@ -51,32 +51,32 @@ describe('SearchComponent', () => {
   });
 
   it('should search for movies and update the component properties', () => {
-  
+
     const moviesArray = [];
     moviesArray.push(testedMovie)
-    const movies = { Response: 'True', Search: moviesArray,  totalResults: 'True'};
+    const movies = { Response: 'True', Search: moviesArray, totalResults: 'True' };
     storeServiceMock.searchByTitle.and.returnValue(of(movies));
     component.search();
     expect(component.loading).toBe(false);
     expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(true);
 
-    fixture.detectChanges(); 
+    fixture.detectChanges();
 
     expect(component.movies).toEqual(movies.Search);
     expect(component.isShowError).toBe(false);
 
     expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(false);
     expect(component.loading).toBe(false);
-  }); 
+  });
 
   it('should handle an error during the search', () => {
     const moviesArray = [];
     moviesArray.push(testedMovie)
-    const movies = { Response: 'False', Search: moviesArray,  totalResults: 'True'};
+    const movies = { Response: 'False', Search: moviesArray, totalResults: 'True' };
 
     storeServiceMock.searchByTitle.and.returnValue(of(movies));
     component.search();
-    fixture.detectChanges(); 
+    fixture.detectChanges();
     expect(movies.Response).toBe('False')
     expect(component.isShowError).toBe(true);
 
@@ -162,7 +162,7 @@ describe('SearchComponent', () => {
       { nativeElement: { style: { display: 'none' } } },
     ]);
 
-    const indexToHover = 1; 
+    const indexToHover = 1;
     component.onTitleHover(indexToHover);
 
     const buttonsArray = component.addToYourListBtns.toArray();
@@ -175,7 +175,7 @@ describe('SearchComponent', () => {
     component.addToYourListBtns = new QueryList<ElementRef>();
     component.addToYourListBtns.reset([])
 
-    const indexToHover = 0; 
+    const indexToHover = 0;
     component.onTitleHover(indexToHover);
     expect(component.addToYourListBtns.length).toBe(0);
   });
