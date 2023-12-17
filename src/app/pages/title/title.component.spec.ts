@@ -123,7 +123,8 @@ describe('TitleComponent', () => {
       expect(component.title).toBe(title);
       spyOn(component, 'checkExistMovieWatchList');
       expect(component.checkExistMovieWatchList).toHaveBeenCalledWith(title);
-      expect(title.Error).toBeUndefined();    expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(false);
+      expect(title.Error).toBeUndefined();  
+      expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(false);
       expect(component.loading).toBe(false);
     })
   })

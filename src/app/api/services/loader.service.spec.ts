@@ -25,14 +25,4 @@ describe('LoaderService', () => {
     loaderService.setLoading(false);
     expect(loaderService.getLoading()).toBe(false);
   });
-
-  it('should log "set loading works"', () => {
-    spyOn(console, 'log');
-    loaderService.setLoading(true);
-  });
-
-  it('should log "get loading works"', () => {
-    spyOn(console, 'log');
-    loaderService.getLoading();
-  });
 });

@@ -22,23 +22,4 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app.title).toEqual('watchlist-app');
   });
-
- /*  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, watchlist-app');
-  }); */
-
-/*   it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    const routerOutletContent = compiled.querySelector('router-outlet')?.textContent;
-
-    console.log('Rendered router-outlet content:', routerOutletContent);
-
-    expect(routerOutletContent).toContain('');
-  }); */
 });
