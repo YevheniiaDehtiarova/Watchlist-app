@@ -1,19 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '../../api/types/title';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { TypeMapper } from '../../api/types/type.mapper';
 import { BaseComponent } from '../base.component';
-import { takeUntil } from 'rxjs';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
 import { SearchDetail } from '../../api/types/search-detail';
-import { AppState } from '../../api/state/app.state';
+import { AppState } from '../../api/store/app.state';
+import { Store, select } from '@ngrx/store';
+import * as appActions from '../../api/store/app.actions'
+import { AppFeatureModule } from '../../api/store/app-feature.module';
+import { Observable, takeUntil } from 'rxjs';
+import { selectCurrentTitle } from '../../api/store/app.selector';
+
+
 
 @Component({
   selector: 'app-title',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, NgClass, LoaderComponent],
+  imports: [NgFor, NgIf, RouterLink, NgClass, LoaderComponent,AppFeatureModule, AsyncPipe],
   templateUrl: './title.component.html',
   styleUrl: './title.component.scss'
 })
@@ -23,9 +29,11 @@ export class TitleComponent extends BaseComponent implements OnInit {
   stars: Array<Number> = [1, 2, 3, 4, 5];
   loading: boolean = false;
   isExistMovieWatchList: boolean = false;
+  title$!: Observable<Title>;
+  isMovieAdded: boolean = false;
 
   constructor(public activateRoute: ActivatedRoute,
-    public store: AppState,
+    public store: Store<AppState>,
     private typeMapper: TypeMapper,
     private loaderService: LoaderService) {
     super();
@@ -33,7 +41,9 @@ export class TitleComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.calculateMovieId();
-    this.loadMovieTitle();
+    this.fetchCurrentTitle(this.movieId);
+
+    this.title$ = this.store.pipe(select(selectCurrentTitle));
   }
 
   public calculateMovieId(): string | null {
@@ -45,36 +55,26 @@ export class TitleComponent extends BaseComponent implements OnInit {
     return this.movieId;
   }
 
-  loadMovieTitle(): void {
+  fetchCurrentTitle(id: string) {
+    console.log(id, 'id in fetch title ts');
     this.loaderService.setLoading(true);
     this.loading = true;
-
-    this.store.fetchCurrentTitle(this.movieId).
-      pipe(takeUntil(this.destroy$))
-      .subscribe(title => {
-        if (title?.Error && title) {
-          console.log('sould add handle error')
-        } else {
-          this.title = title as Title;
-          this.checkExistMovieWatchList(title as Title);
-        }
-        this.loaderService.setLoading(false);
-        this.loading = false;
-      })
+    this.store.dispatch(appActions.fetchCurrentTitle({ id }));
   }
 
-
-  addMovieToWatchList(currentMovie: Title): void {
-    currentMovie.isAdded = true;
-    const modifiedMovie = this.typeMapper.mapTitleToWatchList(currentMovie);
-    this.store.addToWatchList(modifiedMovie);
+  addMovieToWatchList(currentMovie: Title) {
+    this.isMovieAdded = true;
+    const movie = this.typeMapper.mapTitleToWatchList(currentMovie); 
+    console.log(movie, 'movie from add to WL in title')
+    this.store.dispatch(appActions.addToWatchList({ movie }));
+    this.loaderService.setLoading(false);
+    this.loading = false;
   }
 
-  removeMovieFromWatchList(currentMovie: Title): void {
-    currentMovie.isAdded = false;
-    const modifiedMovie = this.typeMapper.mapTitleToWatchList(currentMovie);
-    this.store.removeFromWatchList(modifiedMovie);
-    this.isExistMovieWatchList = false;
+  removeMovieFromWatchList(currentMovie: Title){
+    this.isMovieAdded = false;
+    const movie = this.typeMapper.mapTitleToWatchList(currentMovie);
+    this.store.dispatch(appActions.removeFromWatchList({ movie }));
   }
 
   isStarFilled(value: string, index: number): boolean {

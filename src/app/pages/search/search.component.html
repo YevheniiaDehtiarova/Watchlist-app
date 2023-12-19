@@ -22,7 +22,7 @@
 
 
     <div class="search-result__block">
-        <ul *ngFor="let movie of movies;let i = index">
+        <ul *ngFor="let movie of movies$ | async;let i = index">
             <li style="list-style: none;">
                 <img class="search-image" src="{{movie?.Poster}}" alt="Movie Poster">
                 <a [routerLink]="['/title/', movie.imdbID]" (mouseover)="onTitleHover(i)"

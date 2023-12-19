@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLinkWithHref } from '@angular/router';
 import { AsyncPipe, CommonModule, NgClass, NgFor } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
-import { take, takeUntil } from 'rxjs';
+import { Observable, take, takeUntil } from 'rxjs';
 import { BaseComponent } from '../base.component';
-import { AppState } from '../../api/state/app.state';
+import { Store, select } from '@ngrx/store';
+import { selectWatchList } from '../../api/store/app.selector';
+import { AppState } from '../../api/store/app.state';
+import * as appActions from '../../api/store/app.actions'
 
 
 @Component({
@@ -15,9 +18,11 @@ import { AppState } from '../../api/state/app.state';
   styleUrl: './watch-list.component.scss',
 })
 export class WatchListComponent extends BaseComponent implements OnInit {
-  watchList: Array<SearchDetail> = [];
+  /* watchList: Array<SearchDetail> = [];  */
+  watchList$!: Observable<Array<SearchDetail>>;
 
-  constructor(public store: AppState) {
+
+  constructor(public store: Store<AppState>,) {
     super();
   }
 
@@ -27,7 +32,9 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   }
 
   loadWatchList(): void {
-    this.store.watchList$.pipe(take(1), takeUntil(this.destroy$)).subscribe((list) => {
+    this.watchList$ = this.store.pipe(select(selectWatchList));
+
+  /*   this.store.watchList$.pipe(take(1), takeUntil(this.destroy$)).subscribe((list) => {
       this.watchList = list;
 
       if (this.watchList.length === 0) {
@@ -36,26 +43,21 @@ export class WatchListComponent extends BaseComponent implements OnInit {
       } else {
         this.updateWatchListLocalStorage(this.watchList)
       }
-    });
+    }); */
   }
 
   markAsWatched(movie: SearchDetail): void {
-    this.store.updateMovieFromWatchList(movie);
+    this.store.dispatch(appActions.updateMovieFromWatchList({movie}))
 
-    const index = this.updateWatchListIndex(movie);
-
-    if (index !== -1 && this.watchList?.length > 0) {
-      this.watchList[index].isWatched = true;
-      this.updateWatchListLocalStorage(this.watchList);
-    }
   }
 
-  removeMovieFromWatchList(movie: SearchDetail): void {
-    this.store.removeFromWatchList(movie);
-    this.removeWatchListFromLocalStorage(movie, this.watchList);
+  removeMovieFromWatchList(movie: SearchDetail): void{
+    this.store.dispatch(appActions.removeFromWatchList({ movie }));
   }
 
-  public updateWatchListIndex(movie: SearchDetail): number {
+
+
+  /*public updateWatchListIndex(movie: SearchDetail): number {
     return this.watchList?.findIndex((currentMovie) => currentMovie.imdbID === movie.imdbID);
   }
 
@@ -69,12 +71,13 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   }
 
   public removeWatchListFromLocalStorage(movie: SearchDetail, watchList: Array<SearchDetail>): void {
+    console.log(movie, watchList)
     const index = watchList.findIndex((currentMovie) => currentMovie.imdbID === movie.imdbID)
     if (index !== -1) {
       watchList.splice(index, 1);
       this.updateWatchListLocalStorage(watchList);
     }
-  }
+  } */
 }
 
 

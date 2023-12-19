@@ -7,7 +7,7 @@
     <div *ngIf="loading" class="load-state">
         <app-loader></app-loader>
     </div>
-
+    <div *ngIf="(title$ | async) as title">
     <div *ngIf="title && !loading; else notFound" class="title-container__block">
 
         <div class="title-container__poster">
@@ -41,15 +41,16 @@
             </ul>
 
             <div class="title-container__buttons">
-                <button *ngIf="!title?.isAdded && !isExistMovieWatchList" (click)="addMovieToWatchList(title)">Add to
+                <button *ngIf="!isMovieAdded && !isExistMovieWatchList" (click)="addMovieToWatchList(title)">Add to
                     watch movie list</button>
-                <div *ngIf="title?.isAdded || isExistMovieWatchList"> Movie has been already added</div>
+                <div *ngIf="isMovieAdded || isExistMovieWatchList"> Movie has been already added</div>
                 <button (click)="removeMovieFromWatchList(title)">Remove movie from watch list</button>
                 <a [routerLink]="['/']">See my watch list</a>
             </div>
 
         </div>
 
+    </div>
     </div>
 
     <ng-template #notFound>Movie detail had not been founded</ng-template>

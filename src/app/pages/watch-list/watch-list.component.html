@@ -7,7 +7,7 @@
       </a>  
 </div>
 
-<ul *ngFor="let movie of watchList" class="watch-list__block">
+<ul *ngFor="let movie of watchList$ | async" class="watch-list__block">
     <li>
         <div class="watch-list__image">
             <img  src="{{movie.Poster}}" alt=""> 

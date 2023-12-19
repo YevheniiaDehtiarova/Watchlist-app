@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { AppState } from '../../api/state/app.state';
-import { takeUntil } from 'rxjs';
+import { Observable, concat, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
@@ -8,6 +7,10 @@ import { RouterLink } from '@angular/router';
 import { BaseComponent } from '../base.component';
 import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
+import { Store, select } from '@ngrx/store';
+import * as appActions from '../../api/store/app.actions'
+import { selectSearchMovies, selectSuggestions } from '../../api/store/app.selector';
+import { AppState } from '../../api/store/app.state';
 
 @Component({
   selector: 'app-search',
@@ -20,13 +23,14 @@ export class SearchComponent extends BaseComponent implements OnInit {
   @ViewChildren('addToYourListBtn') addToYourListBtns!: QueryList<ElementRef>;
 
   movies: Array<SearchDetail> = [];
+  movies$!:  Observable<Array<SearchDetail>>;
   loading: boolean = false;
   searchTerm: string = '';
   suggestions: string[] = [];
   isShowError: boolean = false;
 
 
-  constructor(private store: AppState, private loader: LoaderService) {
+  constructor(public store: Store<AppState>, private loader: LoaderService) {
     super();
   }
 
@@ -39,21 +43,15 @@ export class SearchComponent extends BaseComponent implements OnInit {
     this.loader.setLoading(true);
     this.suggestions = [];
 
-    this.store.searchByTitle(this.searchTerm)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (movies) => {
-          if (movies.Response === 'False') {
-            this.isShowError = true;
-          }
-          this.movies = movies.Search;
-        },
-        error: () => { },
-        complete: () => {
-          this.loader.setLoading(false);
-          this.loading = false;
-        }
-      });
+    this.store.dispatch(appActions.searchByTitle({ title: this.searchTerm}));
+
+    this.movies$ = this.store.pipe(select(selectSearchMovies));
+    this.movies$.subscribe(movie => {
+      console.log(movie)
+    })
+
+    this.loader.setLoading(false);
+    this.loading = false;
   }
 
   onInputChange() {
@@ -69,21 +67,19 @@ export class SearchComponent extends BaseComponent implements OnInit {
 
   getSuggestions() {
     if (this.searchTerm && this.searchTerm.length >= 3) {
-      this.store.searchSuggestions(this.searchTerm)
-        .pipe(takeUntil(this.destroy$)).subscribe({
-          next: (results) => {
-            this.suggestions = results;
-          },
-          error: (error) => { }
-        });
+      this.store.dispatch(appActions.loadSuggestions({searchTerm: this.searchTerm}))
+      this.store.pipe(select(selectSuggestions)).subscribe((result) => {
+        console.log(result, 'res in suggest')
+        return this.suggestions = result;
+      })
     } else {
-      this.suggestions = [];
+      this.suggestions = []; 
     }
   }
 
   addToList(movie: SearchDetail): void {
     movie.isAdded = true;
-    this.store.addToWatchList(movie);
+    this.store.dispatch(appActions.addToWatchList({ movie }));
   }
 
   onTitleHover(index: number) {
