@@ -12,7 +12,7 @@ import { Store, select } from '@ngrx/store';
 import * as appActions from '../../api/store/app.actions'
 import { AppFeatureModule } from '../../api/store/app-feature.module';
 import { Observable, takeUntil } from 'rxjs';
-import { selectCurrentTitle,  selectLoading } from '../../api/store/app.selector';
+import { selectCurrentTitle,  selectLoading, selectWatchList } from '../../api/store/app.selector';
 
 
 

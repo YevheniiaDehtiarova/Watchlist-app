@@ -19,8 +19,9 @@ export const appReducer = createReducer(
   on(appActions.fetchCurrentTitle, (state) => ({ ...state, loading: true })),
   on(appActions.fetchCurrentTitleSuccess, (state, { currentTitle }) => {
     const isCheckAddedToList = state.searchResults?.Search.find(movie => movie.imdbID === currentTitle.imdbID)?.isAdded;
-    if (isCheckAddedToList) {
-      const updatedCurrentTitle = { ...currentTitle, isAdded: isCheckAddedToList };
+    const isCheckAddedToWatchList = state.watchList.find(movie => movie.imdbID === currentTitle.imdbID)?.isAdded;
+    if (isCheckAddedToList || isCheckAddedToWatchList) {
+      const updatedCurrentTitle = { ...currentTitle, isAdded: true };
       return { ...state, currentTitle: updatedCurrentTitle, loading: false };
     }
     return { ...state, currentTitle, loading: false };
@@ -35,6 +36,10 @@ export const appReducer = createReducer(
     const isMovieExist = state.watchList.some(existingMovie => existingMovie.imdbID === movie.imdbID);
     if (!isMovieExist) {return { ...state, watchList: [...state.watchList, movie]};}
     return state;
+  }),
+  on(appActions.addMoviesToWatchList, (state, { movies }) => {
+    return { ...state, watchList: movies};
+    
   }),
   on(appActions.removeFromWatchList, (state, { movie }) => ({ ...state, watchList: state.watchList.filter((item) => item.imdbID !== movie.imdbID) })),
   on(appActions.updateMovieFromWatchList, (state, { movie }) => ({
