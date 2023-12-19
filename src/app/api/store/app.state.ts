@@ -9,5 +9,6 @@ export interface AppState {
     searchResults: SearchResult | null;
     searchError: any;
     suggestions: Array<string>;
+    loading: boolean;
   }
 

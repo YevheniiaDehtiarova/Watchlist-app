@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { Observable, concat, takeUntil } from 'rxjs';
+import { Observable, concat, pipe, take, takeUntil } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
@@ -9,7 +9,7 @@ import { LoaderComponent } from '../loader/loader.component';
 import { LoaderService } from '../../api/services/loader.service';
 import { Store, select } from '@ngrx/store';
 import * as appActions from '../../api/store/app.actions'
-import { selectSearchMovies, selectSuggestions } from '../../api/store/app.selector';
+import { selectLoading, selectSearchMovies, selectSuggestions } from '../../api/store/app.selector';
 import { AppState } from '../../api/store/app.state';
 
 @Component({
@@ -22,12 +22,12 @@ import { AppState } from '../../api/store/app.state';
 export class SearchComponent extends BaseComponent implements OnInit {
   @ViewChildren('addToYourListBtn') addToYourListBtns!: QueryList<ElementRef>;
 
-  movies: Array<SearchDetail> = [];
-  movies$!:  Observable<Array<SearchDetail>>;
-  loading: boolean = false;
+  movies$:  Observable<Array<SearchDetail>> =this.store.pipe(select(selectSearchMovies));
+  loading$: Observable<boolean> = this.store.select(selectLoading);
   searchTerm: string = '';
   suggestions: string[] = [];
   isShowError: boolean = false;
+  isMovieAdded: boolean = false;
 
 
   constructor(public store: Store<AppState>, private loader: LoaderService) {
@@ -39,19 +39,13 @@ export class SearchComponent extends BaseComponent implements OnInit {
 
 
   search(): void {
-    this.loading = true;
-    this.loader.setLoading(true);
     this.suggestions = [];
-
     this.store.dispatch(appActions.searchByTitle({ title: this.searchTerm}));
-
-    this.movies$ = this.store.pipe(select(selectSearchMovies));
-    this.movies$.subscribe(movie => {
-      console.log(movie)
+    this.movies$.pipe(takeUntil(this.destroy$)).subscribe((movie) => {
+      if(!movie){
+        this.isShowError = true;
+      }
     })
-
-    this.loader.setLoading(false);
-    this.loading = false;
   }
 
   onInputChange() {
@@ -68,8 +62,7 @@ export class SearchComponent extends BaseComponent implements OnInit {
   getSuggestions() {
     if (this.searchTerm && this.searchTerm.length >= 3) {
       this.store.dispatch(appActions.loadSuggestions({searchTerm: this.searchTerm}))
-      this.store.pipe(select(selectSuggestions)).subscribe((result) => {
-        console.log(result, 'res in suggest')
+      this.store.pipe(select(selectSuggestions),pipe(takeUntil(this.destroy$))).subscribe((result) => {
         return this.suggestions = result;
       })
     } else {
@@ -78,8 +71,8 @@ export class SearchComponent extends BaseComponent implements OnInit {
   }
 
   addToList(movie: SearchDetail): void {
-    movie.isAdded = true;
     this.store.dispatch(appActions.addToWatchList({ movie }));
+    this.store.dispatch(appActions.updateSearchMovie({movie}))
   }
 
   onTitleHover(index: number) {

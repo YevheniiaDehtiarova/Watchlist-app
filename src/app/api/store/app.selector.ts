@@ -39,6 +39,12 @@ export const selectSuggestions = createSelector(
   }
 )
 
+export const selectLoading = createSelector(
+  selectAppState,
+  (state:any) => state.app.loading
+);
+
+
 
 
 

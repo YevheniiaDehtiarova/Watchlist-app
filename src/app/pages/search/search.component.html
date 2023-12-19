@@ -12,12 +12,12 @@
         </li>
     </ul>
 
-    <div *ngIf="loading" class="load-state">
+    <div *ngIf="loading$ | async" class="load-state">
         <app-loader></app-loader>
     </div>
 
-    <div *ngIf="!loading && isShowError" class="no-results-state">
-        Movies has not been founded
+    <div *ngIf="!(loading$ | async) && isShowError" class="no-results-state">
+        Movie has not been founded
     </div>
 
 
@@ -33,4 +33,6 @@
             </li>
         </ul>
     </div>
+
+
 </div>

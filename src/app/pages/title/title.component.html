@@ -4,11 +4,11 @@
         <a [routerLink]="['/search']">Back Search Page</a>
     </div>
 
-    <div *ngIf="loading" class="load-state">
+    <div *ngIf="loading$ | async" class="load-state">
         <app-loader></app-loader>
     </div>
     <div *ngIf="(title$ | async) as title">
-    <div *ngIf="title && !loading; else notFound" class="title-container__block">
+    <div *ngIf="title && !title.Error && !(loading$ | async); else notFound" class="title-container__block">
 
         <div class="title-container__poster">
             <img src="{{title.Poster}}" alt="">
@@ -41,9 +41,9 @@
             </ul>
 
             <div class="title-container__buttons">
-                <button *ngIf="!isMovieAdded && !isExistMovieWatchList" (click)="addMovieToWatchList(title)">Add to
+                <button *ngIf="!isExistMovieWatchList && !title?.isAdded" (click)="addMovieToWatchList(title)">Add to
                     watch movie list</button>
-                <div *ngIf="isMovieAdded || isExistMovieWatchList"> Movie has been already added</div>
+                <div *ngIf="isExistMovieWatchList || title?.isAdded"> Movie has been already added</div>
                 <button (click)="removeMovieFromWatchList(title)">Remove movie from watch list</button>
                 <a [routerLink]="['/']">See my watch list</a>
             </div>
@@ -53,6 +53,11 @@
     </div>
     </div>
 
-    <ng-template #notFound>Movie detail had not been founded</ng-template>
+    <ng-template  #notFound>
+        <div *ngIf="title$ | async as title">
+            <div *ngIf="title.Error"> Movie detail had not been founded</div>
+        </div>
+      
+    </ng-template>
 
 </div>

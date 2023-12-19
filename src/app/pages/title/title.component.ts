@@ -12,7 +12,7 @@ import { Store, select } from '@ngrx/store';
 import * as appActions from '../../api/store/app.actions'
 import { AppFeatureModule } from '../../api/store/app-feature.module';
 import { Observable, takeUntil } from 'rxjs';
-import { selectCurrentTitle } from '../../api/store/app.selector';
+import { selectCurrentTitle,  selectLoading } from '../../api/store/app.selector';
 
 
 
@@ -27,23 +27,19 @@ export class TitleComponent extends BaseComponent implements OnInit {
   movieId!: string;
   title!: Title;
   stars: Array<Number> = [1, 2, 3, 4, 5];
-  loading: boolean = false;
+  loading$: Observable<boolean> = this.store.select(selectLoading);
   isExistMovieWatchList: boolean = false;
-  title$!: Observable<Title>;
-  isMovieAdded: boolean = false;
+  title$: Observable<Title> = this.store.select(selectCurrentTitle);
 
   constructor(public activateRoute: ActivatedRoute,
     public store: Store<AppState>,
-    private typeMapper: TypeMapper,
-    private loaderService: LoaderService) {
+    private typeMapper: TypeMapper) {
     super();
   }
 
   ngOnInit(): void {
     this.calculateMovieId();
     this.fetchCurrentTitle(this.movieId);
-
-    this.title$ = this.store.pipe(select(selectCurrentTitle));
   }
 
   public calculateMovieId(): string | null {
@@ -56,25 +52,19 @@ export class TitleComponent extends BaseComponent implements OnInit {
   }
 
   fetchCurrentTitle(id: string) {
-    console.log(id, 'id in fetch title ts');
-    this.loaderService.setLoading(true);
-    this.loading = true;
-    this.store.dispatch(appActions.fetchCurrentTitle({ id }));
+    this.store.dispatch(appActions.fetchCurrentTitle({ id })); 
   }
 
   addMovieToWatchList(currentMovie: Title) {
-    this.isMovieAdded = true;
     const movie = this.typeMapper.mapTitleToWatchList(currentMovie); 
-    console.log(movie, 'movie from add to WL in title')
     this.store.dispatch(appActions.addToWatchList({ movie }));
-    this.loaderService.setLoading(false);
-    this.loading = false;
+    this.store.dispatch(appActions.updateCurrentTitle({currentTitle: currentMovie, isAdded: true}))
   }
 
   removeMovieFromWatchList(currentMovie: Title){
-    this.isMovieAdded = false;
     const movie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.dispatch(appActions.removeFromWatchList({ movie }));
+    this.store.dispatch(appActions.updateCurrentTitle({currentTitle: currentMovie, isAdded: false}))
   }
 
   isStarFilled(value: string, index: number): boolean {
@@ -82,12 +72,4 @@ export class TitleComponent extends BaseComponent implements OnInit {
     const filledStars = Math.round(rating / 2);
     return index + 1 <= filledStars;
   }
-
-  checkExistMovieWatchList(title: Title): void {
-    const localArray = localStorage.getItem('watchList')
-    const watchList = localArray ? JSON.parse(localArray) : [];
-    const findedElem = watchList.find((movie: SearchDetail) => movie.imdbID === title.imdbID);
-    this.isExistMovieWatchList = findedElem ? true : false;
-  }
-
 }
