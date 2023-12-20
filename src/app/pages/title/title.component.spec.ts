@@ -2,37 +2,29 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 
 import { TitleComponent } from './title.component';
 import { ActivatedRoute } from '@angular/router';
-import { ApiService } from '../../api/services/api.service';
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { LoaderService } from '../../api/services/loader.service';
 import { Title } from '../../api/types/title';
 import { TypeMapper } from '../../api/types/type.mapper';
-import { AppState } from '../../api/store/app.state';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 import { appReducer } from '../../api/store/app.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { AppEffects } from '../../api/store/app.effects';
+import * as appActions from '../../api/store/app.actions';
 
 
 describe('TitleComponent', () => {
   let component: TitleComponent;
   let fixture: ComponentFixture<TitleComponent>;
-  let apiService: ApiService;
-  let http: HttpClient;
-  let appStateMock: jasmine.SpyObj<AppState>;
-  let loaderServiceMock: jasmine.SpyObj<LoaderService>;
+  let store: Store;
   let testedTitle: Title;
   let typeMapper: TypeMapper;
   let testedId: any;
 
   beforeEach(async () => {
-    appStateMock = jasmine.createSpyObj('AppState', ['fetchCurrentTitle', 'addToWatchList']);
-    loaderServiceMock = jasmine.createSpyObj('LoaderService', ['setLoading', 'getLoading']);
+
     await TestBed.configureTestingModule({
       imports: [TitleComponent,HttpClientTestingModule, StoreModule.forRoot(appReducer),EffectsModule.forRoot([AppEffects])],
-      providers: [ ApiService, TypeMapper,
-        { provide: LoaderService, useValue: loaderServiceMock },
+      providers: [ TypeMapper,
         {
           provide: ActivatedRoute,
           useValue: {
@@ -49,8 +41,8 @@ describe('TitleComponent', () => {
 
     fixture = TestBed.createComponent(TitleComponent);
     component = fixture.componentInstance;
+    store = TestBed.inject(Store);
     fixture.detectChanges();
-    apiService = new ApiService(http);
     typeMapper = TestBed.inject(TypeMapper);
     testedId = '1';
     testedTitle = {Title: 'abc',Year: 'abc',Rated: 'abc',Released: 'abc',Runtime: 'abc',Genre: 'abc',Director: 'abc',Writer: 'abc',
@@ -62,9 +54,7 @@ describe('TitleComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should call loadMovieTitle on ngOnInit', () => {
-    component.ngOnInit();
-  });
+
 
   it('should call calculateMovieId on ngOnInit', () => {
     spyOn(component, 'calculateMovieId').and.returnValue(testedId);
@@ -84,60 +74,56 @@ describe('TitleComponent', () => {
     expect(testId).toBe(null);
   })
 
- 
+  it('should call fetchCurrentTitle on ngOnInit', () => {
+    spyOn(component, 'fetchCurrentTitle');
 
+    component.ngOnInit();
 
-  it('should load movie title successfully', fakeAsync(() => {
-/*    appStateMock.fetchCurrentTitle.and.returnValue(of(testedTitle)); */
- 
-/*     component.loadMovieTitle(); */
-
-    expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(true);
-
-  /*   component.store.fetchCurrentTitle(testedId) */
-
-    tick();
-    fixture.detectChanges();
-
-    expect(component.title).toBeUndefined();
-  }));
-
-  it('should handle error while loading movie title', () => {
-    const mockError = new Error('Test error');
-
-   /*  appStateMock.fetchCurrentTitle.and.returnValue(throwError(mockError)); */
-
-/*     component.loadMovieTitle(); */
-
-    expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(true);
-
-    fixture.detectChanges();
+    expect(component.fetchCurrentTitle).toHaveBeenCalledWith(component.movieId);
   });
 
-/*   it ('should test subscription in loadMovieTitle', () => {
-    component.loadMovieTitle();
-    component.store.fetchCurrentTitle(testedId).subscribe((title) => {
-      expect(component.title).toBe(title);
-      expect(title.Error).toBeUndefined();  
-      expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(false);
-    })
-  }) */
+  it('should dispatch fetchCurrentTitle action with the correct ID', () => {
+    const mockMovieId = '123';
+    spyOn(store, 'dispatch');
 
+    component.fetchCurrentTitle(mockMovieId);
 
-    it('should test add movie to wath list', () => {
-   /*    component.addMovieToWatchList(testedTitle);
-      expect(testedTitle.isAdded).toBe(true); */
-   /*    spyOn(appState, 'addToWatchList'); */
-    })
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.fetchCurrentTitle({ id: mockMovieId }));
+  });
 
-  it('should remove a movie from watch list and update local storage', () => {
-    spyOn(typeMapper, 'mapTitleToWatchList').and.returnValue(testedTitle);
-    /* spyOn(appState, 'removeFromWatchList'); */
+ 
+  it('should dispatch addToWatchList and updateCurrentTitle actions', () => {
+    const mockMappedMovie  = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',
+    Year: '2000',imdbID: '1',isWatched: false,isAdded: false
+  }
+
+    spyOn(typeMapper, 'mapTitleToWatchList').and.returnValue(mockMappedMovie);
+    spyOn(store, 'dispatch');
+
+    component.addMovieToWatchList(testedTitle);
+
+    expect(typeMapper.mapTitleToWatchList).toHaveBeenCalledWith(testedTitle);
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.addToWatchList({ movie: mockMappedMovie }));
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.updateCurrentTitle({ currentTitle: testedTitle, isAdded: true }));
+  });
+
+  it('should dispatch removeFromWatchList and updateCurrentTitle actions', () => {
+
+    const mockMappedMovie  = { Poster: 'dvsd',Title: 'svzsg',Type: 'dvdsvsdb',
+    Year: '2000',imdbID: '1',isWatched: false,isAdded: false
+  }
+
+    spyOn(typeMapper, 'mapTitleToWatchList').and.returnValue(mockMappedMovie);
+    spyOn(store, 'dispatch');
 
     component.removeMovieFromWatchList(testedTitle);
 
     expect(typeMapper.mapTitleToWatchList).toHaveBeenCalledWith(testedTitle);
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.removeFromWatchList({ movie: mockMappedMovie }));
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.updateCurrentTitle({ currentTitle: testedTitle, isAdded: false }));
   });
+
+
 
   it('should return true if index + 1 is less than or equal to filled stars', () => {
     const result = component.isStarFilled('8', 2);

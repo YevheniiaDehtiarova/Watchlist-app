@@ -1,24 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SearchComponent } from './search.component';
-import { LoaderService } from '../../api/services/loader.service';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { ApiService } from '../../api/services/api.service';
+import {  HttpClientModule } from '@angular/common/http';
 import { SearchDetail } from '../../api/types/search-detail';
-import { of, throwError } from 'rxjs';
 import { ActivatedRoute, RouterLinkWithHref } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { ElementRef, QueryList } from '@angular/core';
-import { StoreModule } from '@ngrx/store';
+import { Store, StoreModule } from '@ngrx/store';
 import { appReducer } from '../../api/store/app.reducer';
+import * as appActions from '../../api/store/app.actions';
+import { of } from 'rxjs';
 
 describe('SearchComponent', () => {
   let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
-  let http: HttpClient;
-  let apiService: ApiService;
-  let loaderServiceMock: jasmine.SpyObj<LoaderService>;
   let testedMovie: SearchDetail;
+  let store: Store;
 
 
   beforeEach(async () => {
@@ -27,17 +24,14 @@ describe('SearchComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SearchComponent, HttpClientModule,StoreModule.forRoot( appReducer )],
       providers: [
-        { provide: ActivatedRoute, useValue: {} },
-        { provide: LoaderService, useValue: loaderSpy }]
+        { provide: ActivatedRoute, useValue: {} }]
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(SearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    http = TestBed.get(HttpClient);
-    apiService = new ApiService(http);
-    loaderServiceMock = TestBed.inject(LoaderService) as jasmine.SpyObj<LoaderService>;
+    store = TestBed.inject(Store);  
     testedMovie = { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '1', isWatched: false, isAdded: false }
   });
 
@@ -45,101 +39,89 @@ describe('SearchComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should search for movies and update the component properties', () => {
+  it('should dispatch searchByTitle action and handle subscription', () => {
+    component.suggestions = [];
+    component.searchTerm = 'yourSearchTerm';
 
-   /*  const moviesArray = [];
-    moviesArray.push(testedMovie)
-    const movies = { Response: 'True', Search: moviesArray, totalResults: 'True' }; */
-/*     storeServiceMock.searchByTitle.and.returnValue(of(movies)); */
-/*     component.search(); */
+    spyOn(store, 'dispatch');
+    component.search();
 
-   /*  expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(true);
-
-    fixture.detectChanges(); */
-
-/*     expect(component.movies).toEqual(movies.Search); */
-/*     expect(component.isShowError).toBe(false);
-
-    expect(loaderServiceMock.setLoading).toHaveBeenCalledWith(false); */
+    expect(component.suggestions).toEqual([]); 
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.searchByTitle({ title: 'yourSearchTerm' }));
+    expect(component.isShowError).toBe(true);
   });
+
 
   it('should handle an error during the search', () => {
     const moviesArray = [];
     moviesArray.push(testedMovie)
     const movies = { Response: 'False', Search: moviesArray, totalResults: 'True' };
 
- /*    storeServiceMock.searchByTitle.and.returnValue(of(movies)); */
     component.search();
     fixture.detectChanges();
     expect(movies.Response).toBe('False')
     expect(component.isShowError).toBe(true);
+  });
+  it('should dispatch loadSuggestions action and update suggestions when searchTerm is valid', () => {
+    component.searchTerm = 'abc';
+    spyOn(store, 'dispatch');
+    spyOn(store, 'pipe').and.returnValue(of(['suggestion1', 'suggestion2'])); 
 
+    component.getSuggestions();
+
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.loadSuggestions({ searchTerm: 'abc' }));
+
+    fixture.detectChanges();
+
+    expect(component.suggestions).toEqual(['suggestion1', 'suggestion2']);
+  });
+
+  it('should set suggestions to empty array when searchTerm is not valid', () => {
+    component.searchTerm = 'ab';
+    component.getSuggestions();
+    fixture.detectChanges();
+
+    expect(component.suggestions).toEqual([]);
   });
 
 
- /*  it('should set suggestions on successful getSuggestions call', () => {
-    const mockResults = ['result1', 'result2'];
-    storeServiceMock.searchSuggestions.and.returnValue(of(mockResults));
-
-    component.searchTerm = 'abc';
-
-    component.getSuggestions();
-
-    expect(component.suggestions).toEqual(mockResults);
-  }); */
-
- /*  it('should handle error on failed getSuggestions call', () => {
-    const mockError = new Error('Test error');
-     storeServiceMock.searchSuggestions.and.returnValue(throwError(mockError)); *
-
-    component.searchTerm = 'abc';
-
-    component.getSuggestions();
-
-    expect(component.suggestions).toEqual([]);
-  }); */
-
   it('should call getSuggestions and reset suggestions and error state on onInputChange', () => {
-
-  /*   storeServiceMock.searchSuggestions.and.returnValue(of(['result1', 'result2'])); */
-
     component.suggestions = ['existing suggestion'];
     component.isShowError = true;
-
     component.onInputChange();
 
     expect(component.suggestions).toEqual([]);
-
     expect(component.isShowError).toBe(false);
   });
 
   it('should set searchTerm and reset suggestions on selectSuggestion', () => {
     const suggestion = 'selected suggestion';
-
     component.suggestions = ['existing suggestion'];
-
     component.selectSuggestion(suggestion);
 
     expect(component.searchTerm).toEqual(suggestion);
-
     expect(component.suggestions).toEqual([]);
   });
+  it('should dispatch addToWatchList and updateSearchMovie actions', () => {
+    spyOn(store, 'dispatch');
 
+    component.addToList(testedMovie);
+
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.addToWatchList({ movie: testedMovie }));
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.updateSearchMovie({ movie: testedMovie }));
+  });
 
 
   it('should have a router link to /search', () => {
     fixture.detectChanges();
 
     const debugElements = fixture.debugElement.queryAll(By.directive(RouterLinkWithHref));
-
     const hasRouterLink = debugElements.some((debugElement) => {
       const routerLink = debugElement.injector.get(RouterLinkWithHref);
       return routerLink['commands'].toString() === '/';
     });
-
     expect(hasRouterLink).toBeTruthy();
   });
-
 
 
 
@@ -152,9 +134,7 @@ describe('SearchComponent', () => {
 
     const indexToHover = 1;
     component.onTitleHover(indexToHover);
-
     const buttonsArray = component.addToYourListBtns.toArray();
-
     const buttonAtIndex = buttonsArray[indexToHover]?.nativeElement;
     expect(buttonAtIndex.style.display).toBe('flex');
   });

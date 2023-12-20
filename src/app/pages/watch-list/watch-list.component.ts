@@ -58,7 +58,6 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   
       this.updateWatchListLocalStorage(updatedWatchList);
     }
-
   }
 
   removeMovieFromWatchList(movie: SearchDetail): void{

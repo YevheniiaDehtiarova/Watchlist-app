@@ -22,7 +22,7 @@ export type Title = {
   imdbID: string,
   Type: string,
   totalSeasons: string,
-  Response: 'True' | 'False',
+  Response: "True" | "False";
   Error?: string,
   isAdded?: boolean;
 }
