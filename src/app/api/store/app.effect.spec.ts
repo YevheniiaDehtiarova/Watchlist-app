@@ -6,7 +6,6 @@ import * as appActions from './app.actions';
 import { ApiService } from '../services/api.service';
 import { LoaderService } from '../services/loader.service';
 import { cold, hot } from 'jasmine-marbles';
-import { SearchDetail } from '../types/search-detail';
 ;
 
 describe('AppEffects', () => {
@@ -18,12 +17,14 @@ describe('AppEffects', () => {
   
 
   beforeEach(() => {
+    apiService = jasmine.createSpyObj('ApiService', ['getSuggestions', 'getByTitle', 'search']); 
+    loaderService = jasmine.createSpyObj('LoaderService', ['setLoading']);
     TestBed.configureTestingModule({
       providers: [
         AppEffects,
         provideMockActions(() => actions), 
-        { provide: ApiService, useValue: jasmine.createSpyObj('ApiService', ['getByTitle']) },
-        { provide: LoaderService, useValue: jasmine.createSpyObj('LoaderService', ['setLoading']) },
+        { provide: ApiService, useValue: apiService },
+        { provide: LoaderService, useValue: loaderService },
       ],
     });
 
