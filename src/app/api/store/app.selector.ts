@@ -27,7 +27,7 @@ export const selectWatchList = createSelector(
     selectAppState,
     (state: any) => {
       console.log(state, 'state in selectSearchMovies'); 
-      return state.app.searchResults?.Search;
+      return state.app?.searchResults?.Search;
     }
 )
 
@@ -35,7 +35,7 @@ export const selectSuggestions = createSelector(
   selectAppState,
   (state: any) => {
     console.log(state, 'state in selectSuggestions'); 
-    return state.app.suggestions;
+    return state.app?.suggestions;
   }
 )
 

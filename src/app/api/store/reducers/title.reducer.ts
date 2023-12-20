@@ -1,20 +1,22 @@
-import { Title } from "../../types/title";
-import { AppState } from "../app.state";
+import { createReducer, on } from '@ngrx/store';
+import * as appActions from '../app.actions'
+import { initialState } from '../app.reducer';
 
-export const handleFetchCurrentTitle = (state:AppState) => ({...state, loading: true})
-
-export const handleFetchCurrentTitleSuccess = (state: AppState, { currentTitle }: { currentTitle: Title }) => {
+export const currentTitleReducer = createReducer(
+  initialState,
+  on(appActions.fetchCurrentTitle, (state) => ({ ...state, loading: true })),
+  on(appActions.fetchCurrentTitleSuccess, (state, { currentTitle }) => {
     const isCheckAddedToList = state.searchResults?.Search.find(movie => movie.imdbID === currentTitle.imdbID)?.isAdded;
-    if (isCheckAddedToList) {
-      const updatedCurrentTitle = { ...currentTitle, isAdded: isCheckAddedToList };
+    const isCheckAddedToWatchList = state.watchList.find(movie => movie.imdbID === currentTitle.imdbID)?.isAdded;
+    if (isCheckAddedToList || isCheckAddedToWatchList) {
+      const updatedCurrentTitle = { ...currentTitle, isAdded: true };
       return { ...state, currentTitle: updatedCurrentTitle, loading: false };
     }
     return { ...state, currentTitle, loading: false };
-  };
-  
-export const handleFetchCurrentTitleFailure = (state: AppState) => ({ ...state, loading: false });
-  
-export const updateCurrentTitle = (state: AppState, { currentTitle, isAdded }: { currentTitle: Title; isAdded: boolean }) => {
+  }),
+  on(appActions.fetchCurrentTitleFailure, (state) => ({ ...state, loading: false })),
+  on(appActions.updateCurrentTitle, (state, {currentTitle, isAdded}) =>{
     const updateCurrentTitle = {...currentTitle, isAdded: isAdded};
     return {...state, currentTitle: updateCurrentTitle}
-  };
+  }), 
+);
