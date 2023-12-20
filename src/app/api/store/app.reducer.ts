@@ -27,38 +27,21 @@ export const appReducer = createReducer(
     return { ...state, currentTitle, loading: false };
   }),
   on(appActions.fetchCurrentTitleFailure, (state) => ({ ...state, loading: false })),
-  on(appActions.updateCurrentTitle, (state, {currentTitle, isAdded}) =>{
-    const updateCurrentTitle = {...currentTitle, isAdded: isAdded};
-    return {...state, currentTitle: updateCurrentTitle}
-  }), 
+  on(appActions.updateCurrentTitle, (state, {currentTitle, isAdded}) =>{const updateCurrentTitle = {...currentTitle, isAdded: isAdded};return {...state, currentTitle: updateCurrentTitle}}), 
 
   on(appActions.addToWatchList, (state, { movie }) => {
-    const isMovieExist = state.watchList.some(existingMovie => existingMovie.imdbID === movie.imdbID);
-    if (!isMovieExist) {return { ...state, watchList: [...state.watchList, movie]};}
-    return state;
-  }),
-  on(appActions.addMoviesToWatchList, (state, { movies }) => {
-    return { ...state, watchList: movies};
-    
-  }),
+     const isMovieExist = state.watchList.some(existingMovie => existingMovie.imdbID === movie.imdbID);
+    if (!isMovieExist) {return { ...state, watchList: [...state.watchList, movie]};}return state;}),
+  on(appActions.addMoviesToWatchList, (state, { movies }) => { return { ...state, watchList: movies};}),
   on(appActions.removeFromWatchList, (state, { movie }) => ({ ...state, watchList: state.watchList.filter((item) => item.imdbID !== movie.imdbID) })),
-  on(appActions.updateMovieFromWatchList, (state, { movie }) => ({
-    ...state, watchList: state.watchList.map((item) => (item.imdbID === movie.imdbID ? { ...item, isWatched: true } : item)),
-  })),
+  on(appActions.updateMovieFromWatchList, (state, { movie }) => ({ ...state, watchList: state.watchList.map((item) => (item.imdbID === movie.imdbID ? { ...item, isWatched: true } : item)),})),
 
   on(appActions.searchByTitle, (state) => ({ ...state, loading: true })),
   on(appActions.searchSuccess, (state, { movies }) => ({ ...state,searchResults: movies,searchError: null,loading: false})),
   on(appActions.searchFailure, (state, { error }) => ({...state, searchResults: null,searchError: error, loading: false})),
   on(appActions.updateSearchMovie, (state: any, { movie }) => {
-    const updatedSearchResults = (state.searchResults?.Search || []).map((item: { imdbID: string }) =>
-      item.imdbID === movie.imdbID ? { ...item, isAdded: true } : item
-    );
-    return {
-      ...state,
-      searchResults: { ...state.searchResults, Search: updatedSearchResults}
-    };
-  }),
-
+  const updatedSearchResults = (state.searchResults?.Search || []).map((item: { imdbID: string }) =>item.imdbID === movie.imdbID ? { ...item, isAdded: true } : item);
+    return { ...state, searchResults: { ...state.searchResults, Search: updatedSearchResults}}}),
 
 
   on(appActions.loadSuggestionsSuccess, (state, { suggestions }) => ({ ...state, suggestions })),
