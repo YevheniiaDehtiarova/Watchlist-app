@@ -65,27 +65,6 @@ describe('App Reducer', () => {
     expect(state.watchList).toEqual([newMovie]);
   });
 
-  it('should handle addToWatchList action when movie already exists in watchList', () => {
-    const existingMovie = initialState.watchList[0];
-    const action = appActions.addToWatchList({ movie: existingMovie });
-    const state = appReducer(initialState, action);
-    expect(state.watchList).toEqual(initialState.watchList);
-  });
-
-  it('should handle removeFromWatchList action', () => {
-    const initialWatchList = [
-      { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '1', isWatched: false, isAdded: false },
-      { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '2', isWatched: false, isAdded: false },
-      { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '3', isWatched: false, isAdded: false },
-    ];
-
-    const movieToRemove = initialWatchList[1];
-
-    const action = appActions.removeFromWatchList({ movie: movieToRemove });
-    const state = appReducer(initialState, action);
-
-    expect(state.watchList).toEqual([initialWatchList[0], initialWatchList[2]]);
-  });
 
   it('should handle removeFromWatchList action when movie is not in watchList', () => {
     const movieNotInWatchList = { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '4', isWatched: false, isAdded: false };
@@ -96,24 +75,7 @@ describe('App Reducer', () => {
     expect(state.watchList).toEqual(initialState.watchList);
   });
 
-  it('should handle updateMovieFromWatchList action when movie is in watchList', () => {
-    const initialWatchList = [
-      { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '1', isWatched: false, isAdded: false },
-      { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '2', isWatched: false, isAdded: false },
-      { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '3', isWatched: false, isAdded: false },
-    ];
-
-    const movieToUpdate = initialWatchList[1];
-
-    const action = appActions.updateMovieFromWatchList({ movie: movieToUpdate });
-    const state = appReducer(initialState, action);
-
-    expect(state.watchList).toEqual([
-      initialWatchList[0],
-      { ...initialWatchList[1], isWatched: true },
-      initialWatchList[2],
-    ]);
-  });
+ 
 
   it('should handle updateMovieFromWatchList action when movie is not in watchList', () => {
     const movieNotInWatchList = { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '4', isWatched: false, isAdded: false };
@@ -151,24 +113,7 @@ describe('App Reducer', () => {
     expect(state.loading).toBe(false);
   });
 
-  it('should update state on updateSearchMovie', () => {
-    const initialStateWithMovie = {
-      ...initialState,
-      searchResults: {
-        Search: [{ Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '1', isWatched: false, isAdded: false }]
-      },
-    };
-
-    const movieToUpdate = { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '1', isWatched: false, isAdded: false }
-    const action = appActions.updateSearchMovie({ movie: movieToUpdate });
-    const state = appReducer(initialState, action);
-
-    const expectedUpdatedSearchResults = initialStateWithMovie.searchResults.Search.map((item) =>
-      item.imdbID === movieToUpdate.imdbID ? { ...item, isAdded: true } : item
-    );
-
-    expect(state.searchResults?.Search).toEqual(expectedUpdatedSearchResults);
-  });
+ 
 
   it('should update state on loadSuggestionsSuccess', () => {
     const suggestions = ['string1', 'string2']

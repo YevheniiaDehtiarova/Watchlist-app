@@ -18,7 +18,6 @@ import * as appActions from '../../api/store/app.actions'
   styleUrl: './watch-list.component.scss',
 })
 export class WatchListComponent extends BaseComponent implements OnInit {
-  watchList: Array<SearchDetail> = [];  
   watchList$!: Observable<Array<SearchDetail>>;
 
 
@@ -26,69 +25,32 @@ export class WatchListComponent extends BaseComponent implements OnInit {
     super();
   }
 
-
   ngOnInit(): void {
     this.loadWatchList();
   }
 
   loadWatchList(): void {
-    this.store.pipe(select(selectWatchList),take(1), takeUntil(this.destroy$)).subscribe(list => {
+    const movies = this.getWatchListFromLocalStorage(); 
+    if (movies.length) {
+      this.store.dispatch(appActions.setMoviesFromLocalStorage({ movies }));
+    }
+    this.watchList$ = this.store.pipe(select(selectWatchList));
 
-      if(list.length) {
-        this.watchList$ = this.store.pipe(select(selectWatchList));
-        this.watchList = list;
-        this.updateWatchListLocalStorage(list)
-      } else {
-        this.watchList = this.getWatchListFromLocalStorage();
-        this.store.dispatch(appActions.addMoviesToWatchList({movies: this.watchList}));
-        this.watchList$ = this.store.pipe(select(selectWatchList));
-      }
-    })
   }
 
   markAsWatched(movie: SearchDetail): void {
     this.store.dispatch(appActions.updateMovieFromWatchList({movie}));
-
-    const index = this.updateWatchListIndex(movie);
-
-    if (index !== -1 && this.watchList?.length > 0) {
-      const updatedMovie = { ...this.watchList[index], isWatched: true };
-      const updatedWatchList = this.getWatchListFromLocalStorage();
-      updatedWatchList[index] = updatedMovie;
-  
-      this.updateWatchListLocalStorage(updatedWatchList);
-    }
   }
 
   removeMovieFromWatchList(movie: SearchDetail): void{
     this.store.dispatch(appActions.removeFromWatchList({ movie }));
-    this.removeWatchListFromLocalStorage(movie);
-
   }
 
-  public updateWatchListIndex(movie: SearchDetail): number {
-    return this.watchList?.findIndex((currentMovie) => currentMovie.imdbID === movie.imdbID);
-  } 
-
-  public getWatchListFromLocalStorage(): Array<SearchDetail> {
+   public getWatchListFromLocalStorage(): Array<SearchDetail> {
     const storedWatchList = localStorage.getItem('watchList');
     return storedWatchList ? JSON.parse(storedWatchList) : [];
   }
 
-  public updateWatchListLocalStorage(watchList: Array<SearchDetail>): void {
-    localStorage.setItem('watchList', JSON.stringify(watchList));
-  }
-
-  public removeWatchListFromLocalStorage(movie: SearchDetail): void {
-    const watchList = this.getWatchListFromLocalStorage();
-    const updatedWatchList = [...watchList];
-    const index = updatedWatchList.findIndex((currentMovie) => currentMovie.imdbID === movie.imdbID);
-
-    if (index !== -1) {
-      updatedWatchList.splice(index, 1);
-      this.updateWatchListLocalStorage(updatedWatchList);
-    }
-  } 
 }
 
 
