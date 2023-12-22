@@ -10,7 +10,6 @@ import { SearchDetail } from '../../api/types/search-detail';
 import { AppState } from '../../api/store/app.state';
 import { Store, select } from '@ngrx/store';
 import * as appActions from '../../api/store/app.actions'
-import { AppFeatureModule } from '../../api/store/app-feature.module';
 import { Observable, takeUntil } from 'rxjs';
 import { selectCurrentTitle,  selectLoading, selectWatchList } from '../../api/store/app.selector';
 
@@ -19,7 +18,7 @@ import { selectCurrentTitle,  selectLoading, selectWatchList } from '../../api/s
 @Component({
   selector: 'app-title',
   standalone: true,
-  imports: [NgFor, NgIf, RouterLink, NgClass, LoaderComponent,AppFeatureModule, AsyncPipe],
+  imports: [NgFor, NgIf, RouterLink, NgClass, LoaderComponent, AsyncPipe],
   templateUrl: './title.component.html',
   styleUrl: './title.component.scss'
 })

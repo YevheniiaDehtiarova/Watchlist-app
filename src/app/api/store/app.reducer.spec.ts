@@ -32,7 +32,6 @@ describe('App Reducer', () => {
     const state = appReducer(initialState, action);
 
     expect(state.loading).toBe(false);
-
     expect(state.currentTitle).toEqual({ ...title, isAdded: false });
   });
 
@@ -44,9 +43,7 @@ describe('App Reducer', () => {
   });
 
   it('should handle updateCurrentTitle action', () => {
-
     const updatedIsAdded = true;
-
     const action = appActions.updateCurrentTitle({ currentTitle: title, isAdded: updatedIsAdded });
     const state = appReducer(initialState, action);
 
@@ -58,7 +55,6 @@ describe('App Reducer', () => {
       Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb',
       Year: '2000', imdbID: '1', isWatched: false, isAdded: false
     }
-
     const action = appActions.addToWatchList({ movie: newMovie });
     const state = appReducer(initialState, action);
 
@@ -68,7 +64,6 @@ describe('App Reducer', () => {
 
   it('should handle removeFromWatchList action when movie is not in watchList', () => {
     const movieNotInWatchList = { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '4', isWatched: false, isAdded: false };
-
     const action = appActions.removeFromWatchList({ movie: movieNotInWatchList });
     const state = appReducer(initialState, action);
 
@@ -79,7 +74,6 @@ describe('App Reducer', () => {
 
   it('should handle updateMovieFromWatchList action when movie is not in watchList', () => {
     const movieNotInWatchList = { Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '4', isWatched: false, isAdded: false };
-
     const action = appActions.updateMovieFromWatchList({ movie: movieNotInWatchList });
     const state = appReducer(initialState, action);
 
@@ -114,7 +108,6 @@ describe('App Reducer', () => {
   });
 
  
-
   it('should update state on loadSuggestionsSuccess', () => {
     const suggestions = ['string1', 'string2']
     const action = appActions.loadSuggestionsSuccess({ suggestions });

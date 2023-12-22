@@ -11,8 +11,9 @@ import { AppEffects } from './api/store/app.effects';
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes), provideHttpClient(),
     importProvidersFrom(
-    StoreModule.forFeature('app',appReducer), 
+    StoreModule.forFeature('app', appReducer),
     EffectsModule.forRoot([]),
     StoreModule.forRoot({}), 
-    EffectsModule.forFeature([AppEffects])),]
+    EffectsModule.forFeature([AppEffects])), 
+  ]
 };

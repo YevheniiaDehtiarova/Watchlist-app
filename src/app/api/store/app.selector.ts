@@ -1,11 +1,13 @@
-import { createSelector } from '@ngrx/store';
+import { createSelector, select } from '@ngrx/store';
 import { AppState } from './app.state';
+
 
 
 const selectAppState = (state: AppState) => {
   console.log(state)
   return state;
 }
+
 
 export const selectCurrentTitle = createSelector(
 selectAppState,
@@ -19,7 +21,7 @@ export const selectWatchList = createSelector(
   selectAppState,
   (state: any) => {
     console.log(state, 'state in selectWatchList'); 
-    return state.app.watchList;
+    return state.app?.watchList;
   }
 );
 

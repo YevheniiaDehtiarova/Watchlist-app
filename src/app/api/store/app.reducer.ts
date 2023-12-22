@@ -1,4 +1,4 @@
-import { createReducer, on } from '@ngrx/store';
+import { Action, State, createReducer, on } from '@ngrx/store';
 import * as appActions from './app.actions';
 import { AppState } from './app.state';
 
@@ -13,9 +13,11 @@ export const initialState: AppState = {
 };
 
 
+
+
 export const appReducer = createReducer(
   initialState,
-  on(appActions.setMoviesFromLocalStorage, (state, { movies }) => ({ ...state, watchList: movies })),
+  on(appActions.setMoviesFromLocalStorage, (state, { movies }) =>{ return  ({ ...state, watchList: movies })}),
   on(appActions.fetchCurrentTitle, (state) => ({ ...state, loading: true })),
   on(appActions.fetchCurrentTitleSuccess, (state, { currentTitle }) => {
     const isCheckAddedToList = state.searchResults?.Search.find(movie => movie.imdbID === currentTitle.imdbID)?.isAdded;
