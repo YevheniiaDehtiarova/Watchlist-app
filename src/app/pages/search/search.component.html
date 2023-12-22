@@ -1,7 +1,7 @@
 <div class="search-container">
 
-    <div class="search-header">
-        <input type="text" [(ngModel)]="searchTerm" placeholder="Search movie" (input)="onInputChange()">
+    <div [formGroup]="searchForm" class="search-header" *ngIf="searchForm">
+        <input type="text" formControlName="searchTerm" placeholder="Search movie" (input)="onInputChange()">
         <button (click)="search()">Search</button>
         <a [routerLink]="['/']">Back to Watch List</a>
     </div>
@@ -12,14 +12,10 @@
         </li>
     </ul>
 
+
     <div *ngIf="loading$ | async" class="load-state">
         <app-loader></app-loader>
     </div>
-
-    <div *ngIf="!(loading$ | async) && isShowError" class="no-results-state">
-        Movie has not been founded
-    </div>
-
 
     <div class="search-result__block">
         <ul *ngFor="let movie of movies$ | async;let i = index">
@@ -34,5 +30,8 @@
         </ul>
     </div>
 
+    <div *ngIf="searchError$ | async">
+        Movies had not been founded
+    </div>
 
 </div>

@@ -1,6 +1,5 @@
 import { appReducer, initialState } from './app.reducer';
 import * as appActions from './app.actions';
-import { AppState } from './app.state';
 import { Title } from '../types/title';
 
 
@@ -95,6 +94,16 @@ describe('App Reducer', () => {
     expect(state.searchResults).toEqual(movies);
     expect(state.searchError).toBeNull();
     expect(state.loading).toBe(false);
+  });
+
+  it('should update movie in search results', () => {
+    const newMovie = {
+      Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb',
+      Year: '2000', imdbID: '1', isWatched: false, isAdded: false
+    }
+    const updatedMovie = { ...newMovie, isAdded: true };
+
+    appActions.updateSearchMovie({ movie: updatedMovie });
   });
 
   it('should update state on searchFailure', () => {

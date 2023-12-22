@@ -10,9 +10,9 @@ const selectAppState = (state: AppState) => {
 
 
 export const selectCurrentTitle = createSelector(
-selectAppState,
-  (state: any) =>{
-    console.log(state, 'state in selectCurrentTitle'); 
+  selectAppState,
+  (state: any) => {
+    console.log(state, 'state in selectCurrentTitle');
     return state.app.currentTitle
   }
 );
@@ -20,30 +20,38 @@ selectAppState,
 export const selectWatchList = createSelector(
   selectAppState,
   (state: any) => {
-    console.log(state, 'state in selectWatchList'); 
+    console.log(state, 'state in selectWatchList');
     return state.app?.watchList;
   }
 );
 
-  export const selectSearchMovies = createSelector(
-    selectAppState,
-    (state: any) => {
-      console.log(state, 'state in selectSearchMovies'); 
-      return state.app?.searchResults?.Search;
-    }
+export const selectSearchMovies = createSelector(
+  selectAppState,
+  (state: any) => {
+    console.log(state, 'state in selectSearchMovies');
+    return state.app?.searchResults?.Search;
+  }
 )
+
+export const selectSearchError = createSelector(
+  selectAppState,
+  (state:any) => {
+    console.log(state, 'state in error')
+    return state.app?.searchResults?.Error;
+  }
+);
 
 export const selectSuggestions = createSelector(
   selectAppState,
   (state: any) => {
-    console.log(state, 'state in selectSuggestions'); 
+    console.log(state, 'state in selectSuggestions');
     return state.app?.suggestions;
   }
 )
 
 export const selectLoading = createSelector(
   selectAppState,
-  (state:any) => state.app.loading
+  (state: any) => state.app.loading
 );
 
 

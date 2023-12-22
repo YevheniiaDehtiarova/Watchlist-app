@@ -48,7 +48,6 @@ describe('SearchComponent', () => {
 
     expect(component.suggestions).toEqual([]); 
     expect(store.dispatch).toHaveBeenCalledWith(appActions.searchByTitle({ title: 'yourSearchTerm' }));
-    expect(component.isShowError).toBe(true);
   });
 
 
@@ -60,7 +59,6 @@ describe('SearchComponent', () => {
     component.search();
     fixture.detectChanges();
     expect(movies.Response).toBe('False')
-    expect(component.isShowError).toBe(true);
   });
   it('should dispatch loadSuggestions action and update suggestions when searchTerm is valid', () => {
     component.searchTerm = 'abc';
@@ -87,11 +85,9 @@ describe('SearchComponent', () => {
 
   it('should call getSuggestions and reset suggestions and error state on onInputChange', () => {
     component.suggestions = ['existing suggestion'];
-    component.isShowError = true;
     component.onInputChange();
 
     expect(component.suggestions).toEqual([]);
-    expect(component.isShowError).toBe(false);
   });
 
   it('should set searchTerm and reset suggestions on selectSuggestion', () => {
