@@ -1,5 +1,5 @@
 @import '../../../../node_modules/@fortawesome/fontawesome-free/css/all.css';
-@import url('https://fonts.googleapis.com/css2?family=Kalnia:wght@400;500;600&family=Mulish:ital,wght@0,600;0,700;1,400&display=swap');
+
 
 i.fas {
     margin-left: 5px;
@@ -11,8 +11,7 @@ i.far {
     color: #007bff;
 }
  .watch-list__container {
-    width: 800px;
-    max-width: 100%;
+    max-width: 800px;
     margin: 0 auto;
     padding: 15px 30px;
     font-family: 'Mulish', sans-serif;
@@ -95,7 +94,7 @@ i.far {
         border-radius: 5px;
         border: 1px solid #007bff;
         background-color: #3295ff;
-        padding: 10px 10px;
+        padding: 10px;
         margin-right: 10px;
         color: #fff;
         font-size: 20px;
@@ -107,6 +106,19 @@ i.far {
         }
     }
 }
+@media screen and (max-width: 821px) {
+   
+    .watch-list__block li{
+        width: 100% !important;
+    }
+    .watch-list__title{
+        margin-left: 15px;
+    }
+    .watch-list__image img{
+        width: auto;
+        height: auto;
+    }
+}
 
 @media screen  and (max-width: 576px) {
     .watch-list__container{
@@ -116,23 +128,18 @@ i.far {
     h3,a,button{
         font-size: 16px !important;
     }
-    .watch-list__title{
-        margin-left: 5px;
-    }
+   
     .watch-list__image img{
-        width: 150px;
-        height: 200px;
+       width: 100%;
+       height: 100%;
     }
-    .watch-list__block{
-        width: auto;
-    }
-    li{
-        width: 100% !important;
-    }
+  
     .watch-list__actions{
         display: flex;
+
         button{
-            padding: 5px;
+            padding: 15px;
+            margin-right: 15px;
         }
     }
     i.fas{
@@ -140,5 +147,16 @@ i.far {
         justify-content: center;
         align-items: center;
         padding: 5px;
+    }
+    .watch-list__block li{
+        display: flex;
+        flex-direction: column;
+    }
+    .watch-list__title{
+        flex: 0;
+
+        a{
+            margin: 50px 0px 30px 0px;
+        }
     }
 }

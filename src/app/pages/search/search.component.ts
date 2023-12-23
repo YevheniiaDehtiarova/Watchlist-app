@@ -21,9 +21,10 @@ import { AppState } from '../../api/store/app.state';
 })
 export class SearchComponent extends BaseComponent implements OnInit {
   @ViewChildren('addToYourListBtn') addToYourListBtns!: QueryList<ElementRef>;
+  @ViewChild('backButton') backListBtn!: ElementRef;
 
-  movies$: Observable<Array<SearchDetail>> = this.store.pipe(select(selectSearchMovies));
-  loading$: Observable<boolean> = this.store.select(selectLoading);
+  movies$!: Observable<Array<SearchDetail>>;
+  loading$!: Observable<boolean>;
   searchError$!: Observable<any>;
   searchTerm!: string;
   suggestions: string[] = [];
@@ -38,11 +39,16 @@ export class SearchComponent extends BaseComponent implements OnInit {
     this.searchForm = new FormGroup({
       searchTerm: new FormControl()
     });
+    this.loading$ = this.store.select(selectLoading);
   }
+
+ 
 
   search(): void {
     this.suggestions = [];
+    this.backListBtn.nativeElement.style.display = 'block';
     this.store.dispatch(appActions.searchByTitle({ title: this.searchTerm }));
+    this.movies$ =  this.store.pipe(select(selectSearchMovies));
     this.searchError$ = this.store.select(selectSearchError);
   }
 
@@ -72,10 +78,14 @@ export class SearchComponent extends BaseComponent implements OnInit {
     if (this.searchTerm && this.searchTerm.length >= 3) {
       this.store.dispatch(appActions.loadSuggestions({ searchTerm: this.searchTerm }))
       this.store.pipe(select(selectSuggestions), pipe(takeUntil(this.destroy$))).subscribe((result) => {
+        if (window.innerWidth <= 576) {
+          this.backListBtn.nativeElement.style.display = 'none';
+        }
         return this.suggestions = result;
       })
     } else {
       this.suggestions = [];
+      this.backListBtn.nativeElement.style.display = 'block';
     }
   }
 
