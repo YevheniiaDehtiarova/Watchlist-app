@@ -1,4 +1,4 @@
-import { Action, State, createReducer, on } from '@ngrx/store';
+import { createReducer, on } from '@ngrx/store';
 import * as appActions from './app.actions';
 import { AppState } from './app.state';
 
@@ -11,8 +11,6 @@ export const initialState: AppState = {
   suggestions: [],
   loading: false,
 };
-
-
 
 
 export const appReducer = createReducer(

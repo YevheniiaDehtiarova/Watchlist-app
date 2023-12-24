@@ -3,15 +3,12 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '../../api/types/title';
 import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { TypeMapper } from '../../api/types/type.mapper';
-import { BaseComponent } from '../base.component';
 import { LoaderComponent } from '../loader/loader.component';
-import { LoaderService } from '../../api/services/loader.service';
-import { SearchDetail } from '../../api/types/search-detail';
 import { AppState } from '../../api/store/app.state';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import * as appActions from '../../api/store/app.actions'
-import { Observable, takeUntil } from 'rxjs';
-import { selectCurrentTitle,  selectLoading, selectWatchList } from '../../api/store/app.selector';
+import { Observable } from 'rxjs';
+import { selectCurrentTitle, selectLoading } from '../../api/store/app.selector';
 
 
 
@@ -22,7 +19,7 @@ import { selectCurrentTitle,  selectLoading, selectWatchList } from '../../api/s
   templateUrl: './title.component.html',
   styleUrl: './title.component.scss'
 })
-export class TitleComponent extends BaseComponent implements OnInit {
+export class TitleComponent implements OnInit {
   movieId!: string;
   title!: Title;
   stars: Array<Number> = [1, 2, 3, 4, 5];
@@ -32,9 +29,7 @@ export class TitleComponent extends BaseComponent implements OnInit {
 
   constructor(public activateRoute: ActivatedRoute,
     public store: Store<AppState>,
-    private typeMapper: TypeMapper) {
-    super();
-  }
+    private typeMapper: TypeMapper) { }
 
   ngOnInit(): void {
     this.calculateMovieId();
@@ -51,19 +46,19 @@ export class TitleComponent extends BaseComponent implements OnInit {
   }
 
   fetchCurrentTitle(id: string) {
-    this.store.dispatch(appActions.fetchCurrentTitle({ id })); 
+    this.store.dispatch(appActions.fetchCurrentTitle({ id }));
   }
 
   addMovieToWatchList(currentMovie: Title) {
-    const movie = this.typeMapper.mapTitleToWatchList(currentMovie); 
+    const movie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.dispatch(appActions.addToWatchList({ movie }));
-    this.store.dispatch(appActions.updateCurrentTitle({currentTitle: currentMovie, isAdded: true}))
+    this.store.dispatch(appActions.updateCurrentTitle({ currentTitle: currentMovie, isAdded: true }))
   }
 
-  removeMovieFromWatchList(currentMovie: Title){
+  removeMovieFromWatchList(currentMovie: Title) {
     const movie = this.typeMapper.mapTitleToWatchList(currentMovie);
     this.store.dispatch(appActions.removeFromWatchList({ movie }));
-    this.store.dispatch(appActions.updateCurrentTitle({currentTitle: currentMovie, isAdded: false}))
+    this.store.dispatch(appActions.updateCurrentTitle({ currentTitle: currentMovie, isAdded: false }))
   }
 
   isStarFilled(value: string, index: number): boolean {

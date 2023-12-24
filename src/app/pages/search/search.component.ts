@@ -1,6 +1,6 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { Observable, concat, debounceTime, distinctUntilChanged, pipe, take, takeUntil } from 'rxjs';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, } from '@angular/core';
+import { Observable,  debounceTime, distinctUntilChanged, pipe, takeUntil } from 'rxjs';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
 import { RouterLink } from '@angular/router';
@@ -20,13 +20,12 @@ import { AppState } from '../../api/store/app.state';
   styleUrl: './search.component.scss'
 })
 export class SearchComponent extends BaseComponent implements OnInit {
-  @ViewChildren('addToYourListBtn') addToYourListBtns!: QueryList<ElementRef>;
   @ViewChild('backButton') backListBtn!: ElementRef;
 
   movies$!: Observable<Array<SearchDetail>>;
   loading$!: Observable<boolean>;
   searchError$!: Observable<any>;
-  searchTerm!: string;
+  searchTerm: string = '';
   suggestions: string[] = [];
   isMovieAdded: boolean = false;
   searchForm: FormGroup | undefined;
@@ -49,7 +48,9 @@ export class SearchComponent extends BaseComponent implements OnInit {
     this.backListBtn.nativeElement.style.display = 'block';
     this.store.dispatch(appActions.searchByTitle({ title: this.searchTerm }));
     this.movies$ =  this.store.pipe(select(selectSearchMovies));
-    this.searchError$ = this.store.select(selectSearchError);
+    this.searchError$ = this.store.select(selectSearchError); 
+    
+; 
   }
 
   onInputChange() {
@@ -85,20 +86,13 @@ export class SearchComponent extends BaseComponent implements OnInit {
       })
     } else {
       this.suggestions = [];
-      this.backListBtn.nativeElement.style.display = 'block';
+      this.backListBtn.nativeElement.style.display = 'flex';
     }
   }
 
   addToList(movie: SearchDetail): void {
     this.store.dispatch(appActions.addToWatchList({ movie }));
     this.store.dispatch(appActions.updateSearchMovie({ movie }))
-  }
-
-  onTitleHover(index: number) {
-    const button = this.addToYourListBtns.toArray()[index]?.nativeElement;
-    if (button) {
-      button.style.display = 'flex';
-    }
   }
 
 }

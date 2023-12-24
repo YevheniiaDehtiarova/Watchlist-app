@@ -21,11 +21,12 @@
         <ul *ngFor="let movie of movies$ | async;let i = index">
             <li style="list-style: none;">
                 <img class="search-image" src="{{movie?.Poster}}" alt="Movie Poster">
-                <a [routerLink]="['/title/', movie.imdbID]" (mouseover)="onTitleHover(i)"
+                <div class="search-result__title-wrapper">
+                    <a [routerLink]="['/title/', movie.imdbID]"
                     class="search-result__title">{{movie?.Title}}</a>
-                <button *ngIf="!movie?.isAdded" #addToYourListBtn class="search-add-btn" (click)="addToList(movie)">Add
-                    to list</button>
+                <button *ngIf="!movie?.isAdded" class="search-add-btn" (click)="addToList(movie)">Add to list</button> 
                 <div *ngIf="movie?.isAdded">The movie has beed added to watch list</div>
+                </div>
             </li>
         </ul>
     </div>

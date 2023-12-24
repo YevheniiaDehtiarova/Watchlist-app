@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLinkWithHref } from '@angular/router';
 import { AsyncPipe, CommonModule, NgClass, NgFor } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
-import { Observable, take, takeUntil } from 'rxjs';
+import { Observable } from 'rxjs';
 import { BaseComponent } from '../base.component';
 import { Store, select } from '@ngrx/store';
 import { selectWatchList } from '../../api/store/app.selector';
@@ -30,23 +30,22 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   }
 
   loadWatchList(): void {
-    const movies = this.getWatchListFromLocalStorage(); 
+    const movies = this.getWatchListFromLocalStorage();
     if (movies.length) {
       this.store.dispatch(appActions.setMoviesFromLocalStorage({ movies }));
     }
     this.watchList$ = this.store.pipe(select(selectWatchList));
-
   }
 
   markAsWatched(movie: SearchDetail): void {
-    this.store.dispatch(appActions.updateMovieFromWatchList({movie}));
+    this.store.dispatch(appActions.updateMovieFromWatchList({ movie }));
   }
 
-  removeMovieFromWatchList(movie: SearchDetail): void{
+  removeMovieFromWatchList(movie: SearchDetail): void {
     this.store.dispatch(appActions.removeFromWatchList({ movie }));
   }
 
-   public getWatchListFromLocalStorage(): Array<SearchDetail> {
+  public getWatchListFromLocalStorage(): Array<SearchDetail> {
     const storedWatchList = localStorage.getItem('watchList');
     return storedWatchList ? JSON.parse(storedWatchList) : [];
   }

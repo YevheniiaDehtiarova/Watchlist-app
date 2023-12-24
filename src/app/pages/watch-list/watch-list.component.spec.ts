@@ -9,7 +9,7 @@ import { By } from '@angular/platform-browser';
 import { Store, StoreModule, select } from '@ngrx/store';
 import { appReducer } from '../../api/store/app.reducer';
 import * as appActions from './../../api/store/app.actions';
-import { of } from 'rxjs';
+
 
 
 
@@ -83,6 +83,12 @@ describe('WatchListComponent', () => {
     spyOn(localStorage, 'getItem').and.returnValue(JSON.stringify(mockWatchListWithMovie));
     const result = component.getWatchListFromLocalStorage();
     expect(result).toEqual(mockWatchListWithMovie);
+  });
+
+  it('should dispatch removeFromWatchList action', () => {
+    spyOn(store, 'dispatch');
+    component.removeMovieFromWatchList(testedMovie)
+    expect(store.dispatch).toHaveBeenCalledWith(appActions.removeFromWatchList({ movie: testedMovie }));
   });
 });
 

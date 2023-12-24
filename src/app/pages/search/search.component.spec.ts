@@ -5,7 +5,6 @@ import {  HttpClientModule } from '@angular/common/http';
 import { SearchDetail } from '../../api/types/search-detail';
 import { ActivatedRoute, RouterLinkWithHref } from '@angular/router';
 import { By } from '@angular/platform-browser';
-import { ElementRef, QueryList } from '@angular/core';
 import { Store, StoreModule } from '@ngrx/store';
 import { appReducer } from '../../api/store/app.reducer';
 import * as appActions from '../../api/store/app.actions';
@@ -117,30 +116,5 @@ describe('SearchComponent', () => {
       return routerLink['commands'].toString() === '/';
     });
     expect(hasRouterLink).toBeTruthy();
-  });
-
-
-
-  it('should set the display style of the button for a given index', () => {
-    component.addToYourListBtns = new QueryList<ElementRef>();
-    component.addToYourListBtns.reset([
-      { nativeElement: { style: { display: 'none' } } },
-      { nativeElement: { style: { display: 'none' } } },
-    ]);
-
-    const indexToHover = 1;
-    component.onTitleHover(indexToHover);
-    const buttonsArray = component.addToYourListBtns.toArray();
-    const buttonAtIndex = buttonsArray[indexToHover]?.nativeElement;
-    expect(buttonAtIndex.style.display).toBe('flex');
-  });
-
-  it('should handle cases where addToYourListBtns array is not fully populated', () => {
-    component.addToYourListBtns = new QueryList<ElementRef>();
-    component.addToYourListBtns.reset([])
-
-    const indexToHover = 0;
-    component.onTitleHover(indexToHover);
-    expect(component.addToYourListBtns.length).toBe(0);
   });
 });
