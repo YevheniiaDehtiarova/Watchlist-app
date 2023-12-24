@@ -45,7 +45,6 @@ describe('AppEffects', () => {
 
     apiService.getByTitle.and.returnValue(of(currentTitle as any));
 
-
     actions = cold('-a', { a: action });
 
     effects.fetchCurrentTitle$.subscribe(() => {
@@ -61,9 +60,7 @@ describe('AppEffects', () => {
     const movies = { Response: 'abc', Error: 'abc', Search: [{ Poster: 'dvsd', Title: 'svzsg', Type: 'dvdsvsdb', Year: '2000', imdbID: '1', isWatched: false, isAdded: false }], totalResults: 5 };
 
     actions = cold('-a', { a: action });
-
     apiService.search.and.returnValue(of(movies as any));
-
     effects.searchByTitle$.subscribe(() => {
       expect(loaderService.setLoading).toHaveBeenCalledWith(true);
       expect(loaderService.setLoading).toHaveBeenCalledWith(false);
@@ -76,9 +73,7 @@ describe('AppEffects', () => {
     const error = { Error: 'API error' };
 
     actions = cold('-a', { a: action });
-
     apiService.search.and.returnValue(throwError(error));
-
     effects.searchByTitle$.subscribe(() => {
       expect(loaderService.setLoading).toHaveBeenCalledWith(true);
       expect(loaderService.setLoading).toHaveBeenCalledWith(false);
@@ -91,11 +86,8 @@ describe('AppEffects', () => {
     const suggestions = ['suggestion1', 'suggestion2'];
 
     actions = hot('-a', { a: action });
-
     apiService.getSuggestions.and.returnValue(of(suggestions));
-
     const expectedAction = appActions.loadSuggestionsSuccess({ suggestions });
-
     effects.loadSuggestions$.subscribe((resultAction) => {
       expect(resultAction).toEqual(expectedAction);
     });
@@ -106,11 +98,8 @@ describe('AppEffects', () => {
     const error = 'API error';
 
     actions = hot('-a', { a: action });
-
     apiService.getSuggestions.and.returnValue(throwError(error));
-
     const expectedAction = appActions.loadSuggestionsFailure({ error });
-
     effects.loadSuggestions$.subscribe((resultAction) => {
       expect(resultAction).toEqual(expectedAction);
     });

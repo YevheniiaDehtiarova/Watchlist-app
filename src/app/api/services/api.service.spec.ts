@@ -9,7 +9,7 @@ describe('ApiService', () => {
   let service: ApiService;
   let httpMock: HttpTestingController;
   const API_KEY = 'd7f05bec'
-  let url = `http://www.omdbapi.com/?apikey=${API_KEY}`;
+
 
   beforeEach(() => {
     TestBed.configureTestingModule({

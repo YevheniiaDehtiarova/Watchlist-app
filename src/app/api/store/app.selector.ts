@@ -1,57 +1,36 @@
 import { createSelector, select } from '@ngrx/store';
 import { AppState } from './app.state';
 
-
-
 const selectAppState = (state: AppState) => {
-  console.log(state)
   return state;
-}
-
+};
 
 export const selectCurrentTitle = createSelector(
   selectAppState,
-  (state: any) => {
-    return state.app.currentTitle
-  }
+  (state: any) => state.app.currentTitle
 );
 
 export const selectWatchList = createSelector(
   selectAppState,
-  (state: any) => {
-    return state.app?.watchList;
-  }
+  (state: any) => state.app?.watchList
 );
 
 export const selectSearchMovies = createSelector(
   selectAppState,
-  (state: any) => {
-    return state.app?.searchResults?.Search;
-  }
-)
+  (state: any) => state.app?.searchResults?.Search
+);
 
 export const selectSearchError = createSelector(
   selectAppState,
-  (state:any) => {
-    return state.app?.searchResults?.Error;
-  }
+  (state: any) => state.app?.searchResults?.Error
 );
 
 export const selectSuggestions = createSelector(
   selectAppState,
-  (state: any) => {
-    return state.app?.suggestions;
-  }
-)
+  (state: any) => state.app?.suggestions
+);
 
 export const selectLoading = createSelector(
   selectAppState,
   (state: any) => state.app.loading
 );
-
-
-
-
-
-
-

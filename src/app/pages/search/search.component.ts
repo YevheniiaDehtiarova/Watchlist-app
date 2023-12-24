@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, QueryList, ViewChild, } from '@angular/core';
-import { Observable,  debounceTime, distinctUntilChanged, pipe, takeUntil } from 'rxjs';
+import { Observable, debounceTime, distinctUntilChanged, pipe, takeUntil } from 'rxjs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
@@ -30,7 +30,7 @@ export class SearchComponent extends BaseComponent implements OnInit {
   isMovieAdded: boolean = false;
   searchForm: FormGroup | undefined;
 
-  constructor(public store: Store<AppState>, private loader: LoaderService) {
+  constructor(public store: Store<AppState>) {
     super();
   }
 
@@ -41,16 +41,16 @@ export class SearchComponent extends BaseComponent implements OnInit {
     this.loading$ = this.store.select(selectLoading);
   }
 
- 
+
 
   search(): void {
     this.suggestions = [];
-    this.backListBtn.nativeElement.style.display = 'block';
+    this.backListBtn.nativeElement.style.display = 'flex';
     this.store.dispatch(appActions.searchByTitle({ title: this.searchTerm }));
-    this.movies$ =  this.store.pipe(select(selectSearchMovies));
-    this.searchError$ = this.store.select(selectSearchError); 
-    
-; 
+    this.movies$ = this.store.pipe(select(selectSearchMovies));
+    this.searchError$ = this.store.select(selectSearchError);
+
+    ;
   }
 
   onInputChange() {

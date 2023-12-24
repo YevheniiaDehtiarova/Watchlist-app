@@ -21,7 +21,7 @@ export class WatchListComponent extends BaseComponent implements OnInit {
   watchList$!: Observable<Array<SearchDetail>>;
 
 
-  constructor(public store: Store<AppState>,) {
+  constructor(public store: Store<AppState>) {
     super();
   }
 
