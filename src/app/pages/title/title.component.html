@@ -44,7 +44,7 @@
                 <button *ngIf="!isExistMovieWatchList && !title?.isAdded" (click)="addMovieToWatchList(title)">Add to
                     watch movie list</button>
                 <div *ngIf="isExistMovieWatchList || title?.isAdded"> Movie has been already added</div>
-                <button (click)="removeMovieFromWatchList(title)">Remove movie from watch list</button>
+                <button *ngIf="title?.isAdded" (click)="removeMovieFromWatchList(title)">Remove movie from watch list</button>
                 <a [routerLink]="['/']">See my watch list</a>
             </div>
 

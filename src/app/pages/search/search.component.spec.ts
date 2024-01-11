@@ -18,8 +18,7 @@ describe('SearchComponent', () => {
 
 
   beforeEach(async () => {
-    const loaderSpy = jasmine.createSpyObj('LoaderService', ['setLoading']);
-
+  
     await TestBed.configureTestingModule({
       imports: [SearchComponent, HttpClientModule,StoreModule.forRoot( appReducer )],
       providers: [

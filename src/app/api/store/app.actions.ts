@@ -18,10 +18,19 @@ export const loadSuggestions = createAction('[Search] Load Suggestions',props<{ 
 export const loadSuggestionsSuccess = createAction('[Search] Load Suggestions Success',props<{ suggestions: string[] }>());
 export const loadSuggestionsFailure = createAction( '[Search] Load Suggestions Failure', props<{ error: any }>());
 
+export const searchWithSuggestions = createAction('[App] Search With Suggestions', props<{ search: string }>());
+export const searchWithSuggestionsSuccess = createAction('[App] Search With Suggestions Success', props<{ results: SearchResult, suggestions: string[] }>());
+export const searchWithSuggestionsFailure = createAction('[App] Search With Suggestions Failure', props<{ error: any }>());
+
 export const loadWatchList = createAction('[App] Load Watch List' );
 export const addMoviesToWatchList = createAction('[App] Load Movies To Watch List', props<{ movies: Array<SearchDetail>}>());
 export const addToWatchList = createAction('[App] Add To Watch List', props<{ movie: SearchDetail}>());
 export const removeFromWatchList = createAction('[App] Remove From Watch List', props<{ movie: SearchDetail}>());
 export const updateMovieFromWatchList = createAction('[App] Update Movie From Watch List', props<{ movie: SearchDetail }>());
+
+export const setLoadingTrue = createAction('[App] Set Loading True', props<{loading: true}>());
+export const setLoadingFalse = createAction('[App] Set Loading True', props<{loading: false}>());
+
+
 
 

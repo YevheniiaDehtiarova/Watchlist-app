@@ -17,7 +17,11 @@ export const selectWatchList = createSelector(
 
 export const selectSearchMovies = createSelector(
   selectAppState,
-  (state: any) => state.app?.searchResults?.Search
+  (state: any) =>{ 
+    console.log(state, 'state in search')
+    return state.app?.searchResults?.Search
+  }
+
 );
 
 export const selectSearchError = createSelector(
@@ -32,5 +36,8 @@ export const selectSuggestions = createSelector(
 
 export const selectLoading = createSelector(
   selectAppState,
-  (state: any) => state.app.loading
+  (state: any) => {
+    console.log(state, 'state in select loading')
+   return state.app?.loading 
+  }
 );

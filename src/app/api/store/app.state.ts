@@ -8,7 +8,7 @@ export interface AppState {
     watchList: SearchDetail[];
     searchResults: SearchResult | null;
     searchError: any;
-    suggestions: Array<string>;
+    suggestions: Array<string> | null;
     loading: boolean;
   }
 

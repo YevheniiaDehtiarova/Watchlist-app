@@ -4,7 +4,6 @@ import {  Observable, of, throwError } from 'rxjs';
 import { AppEffects } from './app.effects';
 import * as appActions from './app.actions';
 import { ApiService } from '../services/api.service';
-import { LoaderService } from '../services/loader.service';
 import { cold, hot } from 'jasmine-marbles';
 ;
 
@@ -12,25 +11,20 @@ describe('AppEffects', () => {
   let effects: AppEffects;
   let actions: Observable<any>;
   let apiService: jasmine.SpyObj<ApiService>;
-  let loaderService: jasmine.SpyObj<LoaderService>;
 
-  
 
   beforeEach(() => {
     apiService = jasmine.createSpyObj('ApiService', ['getSuggestions', 'getByTitle', 'search']); 
-    loaderService = jasmine.createSpyObj('LoaderService', ['setLoading']);
     TestBed.configureTestingModule({
       providers: [
         AppEffects,
         provideMockActions(() => actions), 
-        { provide: ApiService, useValue: apiService },
-        { provide: LoaderService, useValue: loaderService },
+        { provide: ApiService, useValue: apiService }
       ],
     });
 
     effects = TestBed.inject(AppEffects);
     apiService = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
-    loaderService = TestBed.inject(LoaderService) as jasmine.SpyObj<LoaderService>;
   
   });
 
@@ -46,11 +40,6 @@ describe('AppEffects', () => {
     apiService.getByTitle.and.returnValue(of(currentTitle as any));
 
     actions = cold('-a', { a: action });
-
-    effects.fetchCurrentTitle$.subscribe(() => {
-        expect(loaderService.setLoading).toHaveBeenCalledWith(true);
-        expect(loaderService.setLoading).toHaveBeenCalledWith(false);
-      });
     });
  
 
@@ -61,10 +50,6 @@ describe('AppEffects', () => {
 
     actions = cold('-a', { a: action });
     apiService.search.and.returnValue(of(movies as any));
-    effects.searchByTitle$.subscribe(() => {
-      expect(loaderService.setLoading).toHaveBeenCalledWith(true);
-      expect(loaderService.setLoading).toHaveBeenCalledWith(false);
-    });
   });
 
   it('should dispatch searchFailure action on API error', () => {
@@ -74,10 +59,6 @@ describe('AppEffects', () => {
 
     actions = cold('-a', { a: action });
     apiService.search.and.returnValue(throwError(error));
-    effects.searchByTitle$.subscribe(() => {
-      expect(loaderService.setLoading).toHaveBeenCalledWith(true);
-      expect(loaderService.setLoading).toHaveBeenCalledWith(false);
-    });
   });
 
   it('should dispatch loadSuggestionsSuccess action on successful API call', () => {

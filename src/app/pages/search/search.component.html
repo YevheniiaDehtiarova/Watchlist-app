@@ -1,12 +1,11 @@
 <div class="search-container">
-
-    <div [formGroup]="searchForm" class="search-header" *ngIf="searchForm">
-        <input type="text" formControlName="searchTerm" placeholder="Search movie" (input)="onInputChange()">
-        <button (click)="search()">Search</button>
-        <a #backButton [routerLink]="['/']">Back to Watch List</a>
+<div [formGroup]="searchForm" class="search-header" *ngIf="searchForm">
+    <input type="text" formControlName="searchTerm" placeholder="Search movie" (input)="onInputChange()">
+    <button (click)="search()">Search</button>
+    <a #backButton [routerLink]="['/']">Back to Watch List</a>
     </div>
 
-    <ul *ngIf="suggestions.length > 0" class="suggestions">
+    <ul *ngIf="suggestions" class="suggestions">
         <li *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)">
             {{ suggestion }}
         </li>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { Title } from "../types/title";
 import { SearchResult } from "../types/search-result";
-import { Observable, map } from 'rxjs';
+import { Observable, forkJoin, map } from 'rxjs';
 
 const API_KEY = 'd7f05bec'
 
@@ -26,6 +26,16 @@ export class ApiService {
       .pipe(
         map(response => (response.Search).map(item => item.Title))
       );
+  }
+
+  public searchWithSuggestions(search: string): Observable<{ results: SearchResult, suggestions: string[] }> {
+    const searchObservable = this.search(search);
+    const suggestionsObservable = this.getSuggestions(search);
+
+    return forkJoin({
+      results: searchObservable,
+      suggestions: suggestionsObservable
+    });
   }
 
   public getByTitle(title: string): Observable<Title> {
