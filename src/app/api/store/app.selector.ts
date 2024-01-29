@@ -1,43 +1,37 @@
-import { createSelector, select } from '@ngrx/store';
-import { AppState } from './app.state';
+import { createSelector } from '@ngrx/store';
+import { StoreInterface } from './app.state';
 
-const selectAppState = (state: AppState) => {
-  return state;
+const selectAppState = (state: StoreInterface) => {
+  return state.app; 
 };
 
 export const selectCurrentTitle = createSelector(
   selectAppState,
-  (state: any) => state.app.currentTitle
+  state => state.currentTitle
 );
 
 export const selectWatchList = createSelector(
   selectAppState,
-  (state: any) => state.app?.watchList
+  state => state.watchList
 );
 
 export const selectSearchMovies = createSelector(
   selectAppState,
-  (state: any) =>{ 
-    console.log(state, 'state in search')
-    return state.app?.searchResults?.Search
-  }
+  state => state.searchResults?.Search
 
 );
 
 export const selectSearchError = createSelector(
   selectAppState,
-  (state: any) => state.app?.searchResults?.Error
+  state=> state.searchResults?.Error
 );
 
 export const selectSuggestions = createSelector(
   selectAppState,
-  (state: any) => state.app?.suggestions
+  state => state.suggestions
 );
 
 export const selectLoading = createSelector(
   selectAppState,
-  (state: any) => {
-    console.log(state, 'state in select loading')
-   return state.app?.loading 
-  }
+  state => state.loading 
 );

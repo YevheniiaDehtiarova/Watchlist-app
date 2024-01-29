@@ -4,9 +4,8 @@
         <a [routerLink]="['/search']">Back Search Page</a>
     </div>
 
-    <div *ngIf="loading$ | async" class="load-state">
         <app-loader></app-loader>
-    </div>
+
     <div *ngIf="(title$ | async) as title">
     <div *ngIf="title && !title.Error && !(loading$ | async); else notFound" class="title-container__block">
 

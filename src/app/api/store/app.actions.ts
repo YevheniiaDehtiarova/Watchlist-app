@@ -4,6 +4,7 @@ import { SearchDetail } from "../types/search-detail";
 import { SearchResult } from "../types/search-result";
 
 export const setMoviesFromLocalStorage = createAction( '[App] Set Movies From Local Storage', props<{ movies: SearchDetail[] }>() );
+
 export const fetchCurrentTitle = createAction('[App] Fetch Current Title', props<{ id: string }>());
 export const fetchCurrentTitleSuccess = createAction('[App] Fetch Current Title Success', props<{ currentTitle: Title }>());
 export const fetchCurrentTitleFailure = createAction('[App] Fetch Current Title Failure', props<{  error: any }>());
@@ -17,10 +18,7 @@ export const updateSearchMovie = createAction('[App] Search Detail Update',props
 export const loadSuggestions = createAction('[Search] Load Suggestions',props<{ searchTerm: string }>());
 export const loadSuggestionsSuccess = createAction('[Search] Load Suggestions Success',props<{ suggestions: string[] }>());
 export const loadSuggestionsFailure = createAction( '[Search] Load Suggestions Failure', props<{ error: any }>());
-
-export const searchWithSuggestions = createAction('[App] Search With Suggestions', props<{ search: string }>());
-export const searchWithSuggestionsSuccess = createAction('[App] Search With Suggestions Success', props<{ results: SearchResult, suggestions: string[] }>());
-export const searchWithSuggestionsFailure = createAction('[App] Search With Suggestions Failure', props<{ error: any }>());
+export const clearSuggestions = createAction('[Search] Clear Suggestions')
 
 export const loadWatchList = createAction('[App] Load Watch List' );
 export const addMoviesToWatchList = createAction('[App] Load Movies To Watch List', props<{ movies: Array<SearchDetail>}>());

@@ -1,15 +1,15 @@
-import { Component, ElementRef, OnInit, QueryList, ViewChild, } from '@angular/core';
-import { Observable, Subscription, debounceTime, distinctUntilChanged, pipe, takeUntil } from 'rxjs';
+import { Component, OnInit, inject } from '@angular/core';
+import { debounceTime, distinctUntilChanged, filter, map, pairwise, pipe, takeUntil, tap } from 'rxjs';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { SearchDetail } from '../../api/types/search-detail';
 import { RouterLink } from '@angular/router';
 import { BaseComponent } from '../base.component';
 import { LoaderComponent } from '../loader/loader.component';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import * as appActions from '../../api/store/app.actions'
 import { selectLoading, selectSearchError, selectSearchMovies, selectSuggestions } from '../../api/store/app.selector';
-import { AppState } from '../../api/store/app.state';
+import { StoreInterface } from '../../api/store/app.state';
 
 @Component({
   selector: 'app-search',
@@ -19,102 +19,53 @@ import { AppState } from '../../api/store/app.state';
   styleUrl: './search.component.scss'
 })
 export class SearchComponent extends BaseComponent implements OnInit {
-  @ViewChild('backButton') backListBtn!: ElementRef;
+  public store = inject(Store<StoreInterface>)
+  public readonly loading$ = this.store.select(selectLoading);
+  public readonly movies$ = this.store.select(selectSearchMovies);
+  public readonly searchError$ = this.store.select(selectSearchError);
+  public readonly suggestions$ = this.store.select(selectSuggestions);
 
-  movies$!: Observable<Array<SearchDetail>>;
-  loading$!: Observable<boolean>;
-  searchError$!: Observable<any>;
-  searchTerm: string = '';
-  suggestions: string[] = [];
   isMovieAdded: boolean = false;
-  searchForm: FormGroup | undefined;
-  private searchTermSubscription: Subscription | undefined;
-
-  constructor(public store: Store<AppState>) {
-    super();
-  }
-  //Подписка на каждое изменение search input приводит к тому, что в итоге все равно потом отправляется много запросов.
-  // Решение этого - подписаться на изменения один раз (например, в ngOnInit)
-  //Отдельная переменная suggestions в компоненте тоже лишняя, можно было бы оставить весь их менеджмент в state
+  searchForm: FormGroup = new FormGroup({
+    searchTerm: new FormControl()
+  });
 
 
   ngOnInit(): void {
-    this.searchForm = new FormGroup({
-      searchTerm: new FormControl()
-    });
-    this.loading$ = this.store.select(selectLoading);
-    //this.fetchData();
+    this.searchForm?.get('searchTerm')?.valueChanges
+      .pipe(
+        pairwise(),
+        tap(([prev, curr]) => {
+          if (!Boolean(prev) || prev.length < 3) return;
+          if (!Boolean(curr) || curr.length < 3) {
+            this.store.dispatch(appActions.clearSuggestions())
+          };
+        }),
+        map(([, e]) => e),
+        filter(value => !!value),
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((value) => {
+        this.store.dispatch(appActions.loadSuggestions({ searchTerm: value }))
+      });
   }
-
-/*   fetchData(){
-    this.movies$ = this.store.select(selectSearchMovies);
-    this.searchError$ = this.store.select(selectSearchError);
-    this.store.dispatch(appActions.searchWithSuggestions({ search: this.searchTerm }));
-    console.log('fetch data works')
-  }
-
-  onSearchSubmit(){
-    this.searchTerm = this.searchForm?.value ?? '';
-    console.log(this.searchTerm, 'on search submit works');
-    this.fetchData();
-  } */
-
 
 
   search(): void {
-    this.suggestions = [];
-    this.backListBtn.nativeElement.style.display = 'flex';
-    this.store.dispatch(appActions.searchByTitle({ title: this.searchTerm })); 
-  /// this.store.dispatch(appActions.searchWithSuggestions({ search: this.searchTerm }));
-   console.log('search works')
-    this.movies$ = this.store.select(selectSearchMovies);
-    this.searchError$ = this.store.select(selectSearchError);
-
-    if (this.searchForm) {
-      this.searchTermSubscription?.unsubscribe();
-    }
+    this.store.dispatch(appActions.clearSuggestions());
+    const title = this.searchForm?.get('searchTerm')?.value;
+    this.store.dispatch(appActions.searchByTitle({ title }));
   }
 
-  onInputChange() {
-    this.searchTerm = this.searchForm?.get('searchTerm')?.value;
-    if (this.searchForm) {
-      this.searchTermSubscription =  this.searchForm?.get('searchTerm')?.valueChanges // modify with click search stream
-        .pipe(
-          debounceTime(300),
-          distinctUntilChanged(),
-          takeUntil(this.destroy$)
-        )
-        .subscribe(() => {
-          this.getSuggestions();
-        });
-    }
-    this.suggestions = [];
-  }
+
 
   selectSuggestion(suggestion: string) {
-    this.searchTerm = suggestion;
-    this.suggestions = [];
-    this.searchForm?.get('searchTerm')?.setValue(suggestion);
+    this.searchForm?.get('searchTerm')?.setValue(suggestion, { emitEvent: false });
+    this.store.dispatch(appActions.clearSuggestions());
   }
 
-  getSuggestions() {
-    if (this.searchTerm && this.searchTerm.length >= 3) {
-     /*  this.store.dispatch(appActions.searchWithSuggestions({ search: this.searchTerm })); */
-      this.store.dispatch(appActions.loadSuggestions({ searchTerm: this.searchTerm }))
-      this.store.pipe(select(selectSuggestions), pipe(takeUntil(this.destroy$))).subscribe((result) => {
-        console.log(result, 'result in get suggestion')
-        if (window.innerWidth <= 576) {
-          this.backListBtn.nativeElement.style.display = 'none';// made by css
-        }
-        console.log('if in get suggestion works')
-        return this.suggestions = result;
-      })
-    } else {
-      console.log('else in get suggestion works')
-      this.suggestions = [];
-      this.backListBtn.nativeElement.style.display = 'flex';
-    }
-  }
 
   addToList(movie: SearchDetail): void {
     this.store.dispatch(appActions.addToWatchList({ movie }));

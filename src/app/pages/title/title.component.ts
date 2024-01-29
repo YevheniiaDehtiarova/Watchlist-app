@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '../../api/types/title';
 import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { TypeMapper } from '../../api/types/type.mapper';
 import { LoaderComponent } from '../loader/loader.component';
-import { AppState } from '../../api/store/app.state';
+import { StoreInterface } from '../../api/store/app.state';
 import { Store } from '@ngrx/store';
 import * as appActions from '../../api/store/app.actions';
 import { Observable } from 'rxjs';
@@ -21,36 +21,32 @@ import {
   styleUrl: './title.component.scss',
 })
 export class TitleComponent implements OnInit {
-  movieId!: string;
-  title!: Title;
-  stars: Array<Number> = [1, 2, 3, 4, 5];
-  loading$: Observable<boolean> = this.store.select(selectLoading);
-  isExistMovieWatchList: boolean = false;
-  title$: Observable<Title> = this.store.select(selectCurrentTitle);
+  private store = inject(Store<StoreInterface>);
+  private activateRoute = inject(ActivatedRoute);
+  private typeMapper = inject(TypeMapper);
 
-  constructor(
-    public activateRoute: ActivatedRoute,
-    public store: Store<AppState>,
-    private typeMapper: TypeMapper
-  ) {}
+  loading$: Observable<boolean> = this.store.select(selectLoading);
+  title$: Observable<Title | null> = this.store.select(selectCurrentTitle);
+
+  movieId!: string;
+  stars: Array<Number> = [1, 2, 3, 4, 5];
+  isExistMovieWatchList: boolean = false;
+
 
   ngOnInit(): void {
     this.calculateMovieId();
-    this.fetchCurrentTitle(this.movieId);
+    this.store.dispatch(appActions.fetchCurrentTitle({ id: this.movieId }));
   }
 
   public calculateMovieId(): string | null {
     this.movieId = this.activateRoute?.snapshot?.paramMap.get('id') as string;
-
     if (!this.movieId) {
       return null;
     }
     return this.movieId;
   }
 
-  fetchCurrentTitle(id: string) {
-    this.store.dispatch(appActions.fetchCurrentTitle({ id }));
-  }
+ 
 
   addMovieToWatchList(currentMovie: Title) {
     const movie = this.typeMapper.mapTitleToWatchList(currentMovie);

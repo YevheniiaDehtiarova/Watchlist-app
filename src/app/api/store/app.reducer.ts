@@ -67,15 +67,9 @@ export const appReducer = createReducer(
 
 
   on(appActions.loadSuggestionsSuccess, (state, { suggestions }) => ({ ...state, suggestions })),
-  on(appActions.loadSuggestionsFailure, () => initialState),
+  on(appActions.loadSuggestionsFailure, (state) => ({ ...state, suggestions: [] })), // edit later
+  on(appActions.clearSuggestions, (state) => ({ ...state, suggestions: [] })),
 
-
-  on(appActions.searchWithSuggestions, (state) => ({ ...state, loading: true })),
-  on(appActions.searchWithSuggestionsSuccess, (state, { results, suggestions }) =>{
-    console.log(results, suggestions,state, 'reduers')
-    return ({ ...state, searchResults: results, suggestions, searchError: null, loading: false })
-  }),
-  on(appActions.searchWithSuggestionsFailure, (state, { error }) => ({ ...state, searchResults: null, suggestions: null, searchError: error, loading: false })),
 
   on(appActions.setLoadingTrue, (state)=>({ ...state, loading: true})),
   on(appActions.setLoadingFalse, (state)=>({ ...state, loading: false})),

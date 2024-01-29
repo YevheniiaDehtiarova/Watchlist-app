@@ -8,7 +8,11 @@ export interface AppState {
     watchList: SearchDetail[];
     searchResults: SearchResult | null;
     searchError: any;
-    suggestions: Array<string> | null;
+    suggestions: Array<string>;
     loading: boolean;
+  }
+
+  export interface StoreInterface {
+    app: AppState
   }
 

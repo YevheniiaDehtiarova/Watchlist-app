@@ -14,21 +14,13 @@ export class AppEffects {
   fetchCurrentTitle$ = createEffect(() =>
     this.actions$.pipe(
       ofType(appActions.fetchCurrentTitle),
-      tap(() => {
-        appActions.setLoadingTrue
-      }),
       mergeMap(({ id }) =>
         this.apiService.getByTitle(id).pipe(
           map((currentTitle) => {
-           appActions.setLoadingFalse
-            if (currentTitle.Error) { 
-              appActions.setLoadingFalse
-             }
             return appActions.fetchCurrentTitleSuccess({ currentTitle })
           }
           ),
           catchError((currentTitle) => {
-            appActions.setLoadingFalse
             return of(appActions.fetchCurrentTitleFailure({ error: currentTitle.Error }));
           })
         )
@@ -39,20 +31,12 @@ export class AppEffects {
   searchByTitle$ = createEffect(() =>
     this.actions$.pipe(
       ofType(appActions.searchByTitle),
-      tap(() => {
-        appActions.setLoadingTrue
-      }),
       mergeMap((action) =>
         this.apiService.search(action.title).pipe(
           map((movies) => {
-            if (movies.Error) {
-              of(appActions.searchFailure({ error: movies.Error }))
-            }
-            appActions.setLoadingFalse
             return appActions.searchSuccess({ movies })
           }),
           catchError((movies) => {
-            appActions.setLoadingFalse
             return of(appActions.searchFailure({ error: movies.Error }))
           })
         )
@@ -72,19 +56,4 @@ export class AppEffects {
         )
       )
     ));
-
-
-    searchWithSuggestions$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(appActions.searchWithSuggestions),
-      mergeMap((action) =>
-        this.apiService.searchWithSuggestions(action.search).pipe(
-          map(({ results, suggestions }) => {
-            return appActions.searchWithSuggestionsSuccess({ results, suggestions });
-          }),
-          catchError((error) => of(appActions.searchWithSuggestionsFailure({ error })))
-        )
-      )
-    )
-  );
 }

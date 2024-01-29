@@ -1,20 +1,18 @@
 <div class="search-container">
 <div [formGroup]="searchForm" class="search-header" *ngIf="searchForm">
-    <input type="text" formControlName="searchTerm" placeholder="Search movie" (input)="onInputChange()">
+    <input type="text" formControlName="searchTerm" placeholder="Search movie">
     <button (click)="search()">Search</button>
     <a #backButton [routerLink]="['/']">Back to Watch List</a>
     </div>
 
-    <ul *ngIf="suggestions" class="suggestions">
+    <ul *ngIf="suggestions$ | async as suggestions" class="suggestions">
         <li *ngFor="let suggestion of suggestions" (click)="selectSuggestion(suggestion)">
             {{ suggestion }}
         </li>
     </ul>
 
 
-    <div *ngIf="loading$ | async" class="load-state">
-        <app-loader></app-loader>
-    </div>
+    <app-loader></app-loader>
 
     <div class="search-result__block">
         <ul>

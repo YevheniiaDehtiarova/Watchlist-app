@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Observable } from 'rxjs';
 import { selectLoading } from '../../api/store/app.selector';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../api/store/app.state';
+import { StoreInterface } from '../../api/store/app.state';
 
 
 @Component({
@@ -14,6 +14,6 @@ import { AppState } from '../../api/store/app.state';
   styleUrl: './loader.component.scss'
 })
 export class LoaderComponent  {
+  private store = inject(Store<StoreInterface>)
   loading$: Observable<boolean> = this.store.select(selectLoading);
-  constructor(private store:  Store<AppState>){}
 }

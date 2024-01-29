@@ -16,12 +16,10 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   public search(search: string): Observable<SearchResult> {
-    console.log(search, 'search in service')
     return this.http.get<SearchResult>(this.url, { params: { s: search } })
   }
 
   public getSuggestions(searchTerm: string): Observable<string[]> {
-    console.log(searchTerm, 'st in service get suggest')
     return this.http.get<SearchResult>(this.url, { params: { s: searchTerm } })
       .pipe(
         map(response => (response.Search).map(item => item.Title))
@@ -39,7 +37,6 @@ export class ApiService {
   }
 
   public getByTitle(title: string): Observable<Title> {
-    console.log(title, 'title in service')
     const params = { i: title, apikey: API_KEY };
     let url = `http://www.omdbapi.com/`;
     url = `${url}?${this.buildQueryString(params)}`;
