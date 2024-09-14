@@ -1,32 +1,67 @@
-<div class="watch-list__container">
+<!-- <div class="watch-list__container">
 
-<div class="watch-list__header">
-    <h3>Watch Later Page</h3>
-    <a [routerLink]="['/search']">
-        Go to Search Page
-      </a>  
-</div>
+    <div class="watch-list__header">
+        <h3>Watch Later Page</h3>
+        <a [routerLink]="['/search']">
+            Go to Search Page
+        </a>
+    </div>
 
-<ul *ngFor="let movie of watchList$ | async" class="watch-list__block">
-    <li>
-        <div class="watch-list__image">
-            <img  src="{{movie.Poster}}" alt=""> 
-        </div>
-        <div class="watch-list__title">
-            <a [routerLink]="['/title/', movie.imdbID]">{{movie.Title}}</a>  
-            <div class="watch-list__actions">
-                <div *ngIf="!movie?.isWatched; else elseBlock">
-                    <button class="watch-list__btn" (click)="markAsWatched(movie)">Watched</button>
-                </div>
-                <ng-template #elseBlock>
-                    <button class="watch-list__btn" disabled>Already Watched</button>
-                  </ng-template>
-              
-                <button class="watch-list__btn"(click)="removeMovieFromWatchList(movie)">Delete from list</button>
-                <i class="fas" [ngClass]="{'fa-check': movie?.isWatched, 'fa-eye': !movie?.isWatched}"></i> 
+
+    <ul *ngFor="let movie of watchList$ | async" class="watch-list__block">
+        <li>
+            <div class="watch-list__image">
+                <img src="{{movie.Poster}}" alt="">
             </div>
-        </div>  
-    </li>
-</ul>
+            <div class="watch-list__title">
+                <a [routerLink]="['/title/', movie.imdbID]">{{movie.Title}}</a>
+                <div class="watch-list__actions">
+                    <div *ngIf="!movie?.isWatched; else elseBlock">
+                        <button class="watch-list__btn" (click)="markAsWatched(movie)">Watched</button>
+                    </div>
+                    <ng-template #elseBlock>
+                        <button class="watch-list__btn" disabled>Already Watched</button>
+                    </ng-template>
+
+                    <button class="watch-list__btn" (click)="removeMovieFromWatchList(movie)">Delete from list</button>
+                    <i class="fas" [ngClass]="{'fa-check': movie?.isWatched, 'fa-eye': !movie?.isWatched}"></i>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+ -->
+
+ <div class="watch-list__container">
+
+    <div class="watch-list__header">
+        <h3>Watch Later Page</h3>
+        <a [routerLink]="['/search']">
+            Go to Search Page
+        </a>
+    </div>
+
+
+    @for(movie of watchList$ | async; track movie){
+    <ul  class="watch-list__block">
+        <li>
+            <div class="watch-list__image">
+                <img src="{{movie.Poster}}" alt="">
+            </div>
+            <div class="watch-list__title">
+                <a [routerLink]="['/title/', movie.imdbID]">{{movie.Title}}</a>
+                <div class="watch-list__actions">
+                    @if(!movie?.isAdded){
+                        <button class="watch-list__btn" (click)="markAsWatched(movie)">Watched</button>  
+                    } @else {
+                        <button class="watch-list__btn" disabled>Already Watched</button> 
+                    }
+                    <button class="watch-list__btn" (click)="removeMovieFromWatchList(movie)">Delete from list</button>
+                    <i class="fas" [ngClass]="{'fa-check': movie?.isWatched, 'fa-eye': !movie?.isWatched}"></i>
+                </div>
+            </div>
+        </li>
+    </ul>
+}
 </div>
 

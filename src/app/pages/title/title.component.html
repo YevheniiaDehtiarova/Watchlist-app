@@ -1,62 +1,131 @@
-<div class="title-container">
+<!-- <div class="title-container">
     <div class="title-container__header">
         <h4>Movie Detail</h4>
         <a [routerLink]="['/search']">Back Search Page</a>
     </div>
 
-        <app-loader></app-loader>
+    <app-loader></app-loader>
 
     <div *ngIf="(title$ | async) as title">
-    <div *ngIf="title && !title.Error && !(loading$ | async); else notFound" class="title-container__block">
+        <div *ngIf="title && !title.Error && !(loading$ | async); else notFound" class="title-container__block">
 
+            <div class="title-container__poster">
+                <img src="{{title.Poster}}" alt="">
+            </div>
+            <div class="title-container__content">
+                <p>{{title.Title}}</p>
+                <div>
+                    <span class="title-container__subtitle">Writer:</span>
+                    <span class="title-container__name"> {{title.Writer}}</span>
+                </div>
+                <div>
+                    <span class="title-container__subtitle">Country:</span>
+                    <span class="title-container__name">{{title.Country}}</span>
+                </div>
+
+                <div>
+                    <span class="title-container__subtitle">Year:</span>
+                    <span class="title-container__name">{{title.Year}}</span>
+                </div>
+
+                <ul *ngIf="title?.Ratings">
+                    <li *ngFor="let rate of title.Ratings">
+                        <span class="title-container__subtitle">{{ rate.Source }}</span>
+                        <span class="title-container__name">{{ rate.Value }}</span>
+                        <div class="star-rating">
+                            <div class="star" [ngClass]="{'filled': isStarFilled(rate.Value,i)}"
+                                *ngFor="let star of stars; let i = index"></div>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="title-container__buttons">
+                    <button *ngIf="!isExistMovieWatchList && !title?.isAdded" (click)="addMovieToWatchList(title)">Add
+                        to
+                        watch movie list</button>
+                    <div *ngIf="isExistMovieWatchList || title?.isAdded"> Movie has been already added</div>
+                    <button *ngIf="title?.isAdded" (click)="removeMovieFromWatchList(title)">Remove movie from watch
+                        list</button>
+                    <a [routerLink]="['/']">See my watch list</a>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <ng-template #notFound>
+        <div *ngIf="title$ | async as title">
+            <div *ngIf="title.Error"> Movie detail had not been founded</div>
+        </div>
+
+    </ng-template>
+
+</div> -->
+
+
+<div class="title-container">
+    <div class="title-container__header">
+        <h4>Movie Detail</h4>
+        <a [routerLink]="['/search']">Back Search Page</a>
+    </div>
+    <app-loader></app-loader>
+
+    @if(title$ | async; as title){
+    @if(!title.Error && !(loading$ | async)){
+    <div class="title-container__block">
         <div class="title-container__poster">
-            <img src="{{title.Poster}}" alt="">
+            <img src="{{title?.Poster}}" alt="">
         </div>
         <div class="title-container__content">
             <p>{{title.Title}}</p>
             <div>
                 <span class="title-container__subtitle">Writer:</span>
-                <span class="title-container__name"> {{title.Writer}}</span>
+                <span class="title-container__name"> {{title?.Writer}}</span>
             </div>
             <div>
                 <span class="title-container__subtitle">Country:</span>
-                <span class="title-container__name">{{title.Country}}</span>
+                <span class="title-container__name">{{title?.Country}}</span>
             </div>
 
             <div>
                 <span class="title-container__subtitle">Year:</span>
-                <span class="title-container__name">{{title.Year}}</span>
+                <span class="title-container__name">{{title?.Year}}</span>
             </div>
-
-            <ul *ngIf="title?.Ratings">
-                <li *ngFor="let rate of title.Ratings">
+            @if(title.Ratings) {
+            <ul>
+                @for(rate of title.Ratings; track rate){
+                <li>
                     <span class="title-container__subtitle">{{ rate.Source }}</span>
                     <span class="title-container__name">{{ rate.Value }}</span>
                     <div class="star-rating">
-                        <div class="star" [ngClass]="{'filled': isStarFilled(rate.Value,i)}"
-                            *ngFor="let star of stars; let i = index"></div>
+                        @for(star of stars; track star; let i = $index){
+                            <div class="star" [ngClass]="{'filled': isStarFilled(rate.Value,i)}"></div>
+                        }
                     </div>
                 </li>
+                }
             </ul>
-
+            }
             <div class="title-container__buttons">
-                <button *ngIf="!isExistMovieWatchList && !title?.isAdded" (click)="addMovieToWatchList(title)">Add to
-                    watch movie list</button>
-                <div *ngIf="isExistMovieWatchList || title?.isAdded"> Movie has been already added</div>
-                <button *ngIf="title?.isAdded" (click)="removeMovieFromWatchList(title)">Remove movie from watch list</button>
+                @if(!isExistMovieWatchList && !title?.isAdded){
+                  <button  (click)="addMovieToWatchList(title)">Add to watchmovie list</button> 
+                } @else {
+                    Movie has been already added
+                }
+
+                @if(title.isAdded){
+                    <button  (click)="removeMovieFromWatchList(title)">Remove movie from watch list</button>
+                }
                 <a [routerLink]="['/']">See my watch list</a>
             </div>
-
         </div>
-
-    </div>
     </div>
 
-    <ng-template  #notFound>
-        <div *ngIf="title$ | async as title">
-            <div *ngIf="title.Error"> Movie detail had not been founded</div>
-        </div>
-      
-    </ng-template>
-
+    } @else {
+    @if(title.Error) {
+    Movie detail had not been founded
+      }
+     }
+    }
 </div>
