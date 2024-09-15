@@ -4,6 +4,7 @@
         <button (click)="search()">Search</button>
         <a #backButton [routerLink]="['/']">Back to Watch List</a>
     </div>
+
     @if (suggestions$ | async; as suggestions) {
     <ul class="suggestions">
         @for (suggestion of suggestions; track suggestion) {
@@ -11,22 +12,29 @@
             {{ suggestion }}
         </li>
         }
+        @empty {
+        <li>No suggestions available</li>
+        }
     </ul>
     }
+
+    @if(loading$ | async){
     <app-loader></app-loader>
+    }
+
+
     <div class="search-result__block">
         <ul>
             @if(movies$ | async; as movies){
-            @for(movie of movies; track movie) {
+            @for(movie of movies; track movie.imdbID) {
             <li style="list-style: none">
                 <img class="search-image" src="{{movie?.Poster}}" alt="Movie Poster">
                 <div class="search-result__title-wrapper">
                     <a [routerLink]="['/title/', movie.imdbID]" class="search-result__title">{{movie?.Title}}</a>
                     @if (!movie?.isAdded) {
                     <button class="search-add-btn" (click)="addToList(movie)">Add to list</button>
-                    }
-                    @if(movie?.isAdded){
-                    <div>The movie has beed added to watch list</div>
+                    } @else {
+                    <div>The movie has been added to watch list</div>
                     }
                 </div>
             </li>
